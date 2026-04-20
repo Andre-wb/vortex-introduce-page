@@ -456,14 +456,14 @@
 <nav class="nav">
   <a href="/static" class="nav-brand">
     <span class="nav-dot"></span>
-    VORTEX
+    <span data-i18n="nav.brand">VORTEX</span>
   </a>
   <div class="nav-links">
-    <a href="/nodes">Nodes</a>
-    <a href="/entries">Entries</a>
-    <a href="/mirrors">Mirrors</a>
-    <a href="/security">Security</a>
-    <a href="/admin">Treasury</a>
+    <a href="/nodes" data-i18n="nav.nodes">Nodes</a>
+    <a href="/entries" data-i18n="nav.entries">Entries</a>
+    <a href="/mirrors" data-i18n="nav.mirrors">Mirrors</a>
+    <a href="/security" data-i18n="nav.security">Security</a>
+    <a href="/admin" data-i18n="nav.treasury">Treasury</a>
   </div>
 </nav>
 
@@ -474,30 +474,30 @@
     <div class="hero-vignette"></div>
 
     <div class="hero-content">
-      <div class="hero-eyebrow">VORTEXX.SOL — CONTROLLER v1.0</div>
+      <div class="hero-eyebrow" data-i18n="hero.eyebrow">VORTEXX.SOL — CONTROLLER v1.0</div>
       <h1 class="hero-title">
-        Decentralized<br>
-        <em>P2P messenger</em><br>
-        protocol
+        <span data-i18n="hero.title_line1">Decentralized</span><br>
+        <em data-i18n="hero.title_line2">P2P messenger</em><br>
+        <span data-i18n="hero.title_line3">protocol</span>
       </h1>
-      <p class="hero-sub">
+      <p class="hero-sub" data-i18n="hero.sub">
         Discovery &amp; verification controller for the Vortex
         peer-to-peer network. Open. Encrypted. Unstoppable.
       </p>
       <div class="hero-badges">
-        <span class="badge badge-ok">● ONLINE</span>
+        <span class="badge badge-ok" data-i18n="hero.badge_online">● ONLINE</span>
         <span class="badge badge-pur">vortexx.sol</span>
         <span class="badge badge-info">Ed25519</span>
         <span class="badge badge-warn" id="hero-version">v—</span>
       </div>
       <div class="hero-cta">
-        <a href="/nodes" class="btn btn-primary">View nodes</a>
-        <a href="/security" class="btn btn-ghost">Security model</a>
+        <a href="/nodes" class="btn btn-primary" data-i18n="hero.cta_view_nodes">View nodes</a>
+        <a href="/security" class="btn btn-ghost" data-i18n="hero.cta_security">Security model</a>
       </div>
     </div>
 
     <div class="scroll-hint">
-      <span>SCROLL</span>
+      <span data-i18n="hero.scroll">SCROLL</span>
       <div class="scroll-line"></div>
     </div>
   </div>
@@ -506,9 +506,12 @@
 <section class="section" id="s-network">
   <div class="section-inner">
     <div class="fade-in">
-      <div class="sec-label">NETWORK</div>
-      <h2 class="sec-heading">Distributed trust<br>at every layer</h2>
-      <p class="sec-body">
+      <div class="sec-label" data-i18n="network.label">NETWORK</div>
+      <h2 class="sec-heading">
+        <span data-i18n="network.heading_line1">Distributed trust</span><br>
+        <span data-i18n="network.heading_line2">at every layer</span>
+      </h2>
+      <p class="sec-body" data-i18n="network.body">
         Every peer holds a signed identity. Clients verify before connecting,
         nodes prove ownership at registration. No central authority can fake
         what cryptography has already confirmed.
@@ -517,53 +520,53 @@
 
     <div class="stats-grid fade-in">
       <div class="stat">
-        <div class="stat-k">REGISTERED NODES</div>
+        <div class="stat-k" data-i18n="network.stat_nodes_k">REGISTERED NODES</div>
         <div class="stat-v" id="sn-nodes">—</div>
-        <div class="stat-sub">known peers</div>
+        <div class="stat-sub" data-i18n="network.stat_nodes_sub">known peers</div>
       </div>
       <div class="stat">
-        <div class="stat-k">ONLINE NOW</div>
+        <div class="stat-k" data-i18n="network.stat_online_k">ONLINE NOW</div>
         <div class="stat-v" id="sn-online">—</div>
-        <div class="stat-sub">active connections</div>
+        <div class="stat-sub" data-i18n="network.stat_online_sub">active connections</div>
       </div>
       <div class="stat">
-        <div class="stat-k">DUAL VERIFIED</div>
+        <div class="stat-k" data-i18n="network.stat_dual_k">DUAL VERIFIED</div>
         <div class="stat-v" id="sn-dual">—</div>
-        <div class="stat-sub">on-chain sealed</div>
+        <div class="stat-sub" data-i18n="network.stat_dual_sub">on-chain sealed</div>
       </div>
       <div class="stat">
-        <div class="stat-k">UPTIME SLA</div>
+        <div class="stat-k" data-i18n="network.stat_uptime_k">UPTIME SLA</div>
         <div class="stat-v">99.9<span style="font-size:15px;font-weight:400">%</span></div>
-        <div class="stat-sub">controller target</div>
+        <div class="stat-sub" data-i18n="network.stat_uptime_sub">controller target</div>
       </div>
     </div>
 
     <div class="verif-row fade-in">
       <div class="verif-card">
         <div class="verif-head">
-          <span class="badge badge-ok">✓✓ DUAL</span>
-          <strong style="font-size:12px">Dual-verified</strong>
+          <span class="badge badge-ok" data-i18n="network.dual_badge">✓✓ DUAL</span>
+          <strong style="font-size:12px" data-i18n="network.dual_title">Dual-verified</strong>
         </div>
-        <div class="verif-body">Registered with the controller AND sealed on-chain via Solana. Two independent witnesses confirm code hash and pubkey. Safe for sensitive sessions.</div>
+        <div class="verif-body" data-i18n="network.dual_body">Registered with the controller AND sealed on-chain via Solana. Two independent witnesses confirm code hash and pubkey. Safe for sensitive sessions.</div>
       </div>
       <div class="verif-card">
         <div class="verif-head">
-          <span class="badge badge-info">✓ CTRL</span>
-          <strong style="font-size:12px">Controller only</strong>
+          <span class="badge badge-info" data-i18n="network.ctrl_badge">✓ CTRL</span>
+          <strong style="font-size:12px" data-i18n="network.ctrl_title">Controller only</strong>
         </div>
-        <div class="verif-body">Signature proves the node owns its private key, but code integrity is not anchored on-chain. Fine for most sessions; risk = trust the controller operator.</div>
+        <div class="verif-body" data-i18n="network.ctrl_body">Signature proves the node owns its private key, but code integrity is not anchored on-chain. Fine for most sessions; risk = trust the controller operator.</div>
       </div>
       <div class="verif-card">
         <div class="verif-head">
-          <span class="badge badge-warn">⚠ UNVERIF</span>
-          <strong style="font-size:12px">Bootstrap only</strong>
+          <span class="badge badge-warn" data-i18n="network.unverif_badge">⚠ UNVERIF</span>
+          <strong style="font-size:12px" data-i18n="network.unverif_title">Bootstrap only</strong>
         </div>
-        <div class="verif-body">Known from config or gossip. No cryptographic proof yet. Use only to bootstrap the peer list — never as a handoff target for live sessions.</div>
+        <div class="verif-body" data-i18n="network.unverif_body">Known from config or gossip. No cryptographic proof yet. Use only to bootstrap the peer list — never as a handoff target for live sessions.</div>
       </div>
     </div>
 
     <div class="fade-in">
-      <a href="/nodes" class="btn btn-ghost">Browse all nodes →</a>
+      <a href="/nodes" class="btn btn-ghost" data-i18n="network.cta_browse">Browse all nodes →</a>
     </div>
   </div>
 </section>
@@ -571,9 +574,12 @@
 <section class="section" id="s-security">
   <div class="section-inner">
     <div class="fade-in">
-      <div class="sec-label">SECURITY</div>
-      <h2 class="sec-heading">Zero-compromise<br>cryptographic model</h2>
-      <p class="sec-body">
+      <div class="sec-label" data-i18n="security.label">SECURITY</div>
+      <h2 class="sec-heading">
+        <span data-i18n="security.heading_line1">Zero-compromise</span><br>
+        <span data-i18n="security.heading_line2">cryptographic model</span>
+      </h2>
+      <p class="sec-body" data-i18n="security.body">
         Four independent Ed25519 keypairs, each with a single narrow job.
         Compromise of any one key does not break the others.
       </p>
@@ -584,94 +590,94 @@
         <table class="keys-table">
           <thead>
             <tr>
-              <th>KEY</th>
-              <th>SIGNS</th>
-              <th>VERIFIED BY</th>
+              <th data-i18n="security.th_key">KEY</th>
+              <th data-i18n="security.th_signs">SIGNS</th>
+              <th data-i18n="security.th_verified">VERIFIED BY</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Release key</td>
-              <td>Code manifest (INTEGRITY.sig.json)</td>
-              <td>Clients — pinned at build time</td>
+              <td data-i18n="security.release_key">Release key</td>
+              <td data-i18n="security.release_signs">Code manifest (INTEGRITY.sig.json)</td>
+              <td data-i18n="security.release_verified">Clients — pinned at build time</td>
             </tr>
             <tr>
-              <td>Controller key</td>
-              <td>Every /v1/* response payload</td>
-              <td>Clients — from SNS or build pin</td>
+              <td data-i18n="security.controller_key">Controller key</td>
+              <td data-i18n="security.controller_signs">Every /v1/* response payload</td>
+              <td data-i18n="security.controller_verified">Clients — from SNS or build pin</td>
             </tr>
             <tr>
-              <td>Node signing key</td>
-              <td>Registration &amp; heartbeats</td>
-              <td>Controller — on registration</td>
+              <td data-i18n="security.node_key">Node signing key</td>
+              <td data-i18n="security.node_signs">Registration &amp; heartbeats</td>
+              <td data-i18n="security.node_verified">Controller — on registration</td>
             </tr>
             <tr>
-              <td>User identity (X25519)</td>
-              <td>Session tokens, message envelopes</td>
-              <td>Receiving node only</td>
+              <td data-i18n="security.user_key">User identity (X25519)</td>
+              <td data-i18n="security.user_signs">Session tokens, message envelopes</td>
+              <td data-i18n="security.user_verified">Receiving node only</td>
             </tr>
           </tbody>
         </table>
 
         <div class="trust-flow">
           <div class="flow-step">
-            <div class="flow-n">01 / RESOLVE</div>
-            <div class="flow-t">SNS lookup</div>
-            <div class="flow-d">Read <code>vortexx.sol</code> on-chain. Records signed by Solana wallet — impossible to DNS-hijack.</div>
+            <div class="flow-n" data-i18n="security.step1_n">01 / RESOLVE</div>
+            <div class="flow-t" data-i18n="security.step1_t">SNS lookup</div>
+            <div class="flow-d" data-i18n-html="security.step1_d">Read <code>vortexx.sol</code> on-chain. Records signed by Solana wallet — impossible to DNS-hijack.</div>
           </div>
           <div class="flow-step">
-            <div class="flow-n">02 / PROBE</div>
-            <div class="flow-t">Integrity check</div>
-            <div class="flow-d">Client calls <code>/v1/integrity</code>. Rejects any response except <code>status: verified</code> from the pinned release key.</div>
+            <div class="flow-n" data-i18n="security.step2_n">02 / PROBE</div>
+            <div class="flow-t" data-i18n="security.step2_t">Integrity check</div>
+            <div class="flow-d" data-i18n-html="security.step2_d">Client calls <code>/v1/integrity</code>. Rejects any response except <code>status: verified</code> from the pinned release key.</div>
           </div>
           <div class="flow-step">
-            <div class="flow-n">03 / VERIFY</div>
-            <div class="flow-t">Signed responses</div>
-            <div class="flow-d">Every API call returns <code>{payload, sig, signed_by}</code>. Client verifies the Ed25519 signature before trusting.</div>
+            <div class="flow-n" data-i18n="security.step3_n">03 / VERIFY</div>
+            <div class="flow-t" data-i18n="security.step3_t">Signed responses</div>
+            <div class="flow-d" data-i18n-html="security.step3_d">Every API call returns <code>{payload, sig, signed_by}</code>. Client verifies the Ed25519 signature before trusting.</div>
           </div>
           <div class="flow-step">
-            <div class="flow-n">04 / SEAL</div>
-            <div class="flow-t">On-chain cross-check</div>
-            <div class="flow-d">Sealed nodes: client reads <code>code_hash</code> from Solana registry. Divergence from controller = permanently blacklisted.</div>
+            <div class="flow-n" data-i18n="security.step4_n">04 / SEAL</div>
+            <div class="flow-t" data-i18n="security.step4_t">On-chain cross-check</div>
+            <div class="flow-d" data-i18n-html="security.step4_d">Sealed nodes: client reads <code>code_hash</code> from Solana registry. Divergence from controller = permanently blacklisted.</div>
           </div>
         </div>
 
-        <a href="/security" class="btn btn-ghost">Full security model →</a>
+        <a href="/security" class="btn btn-ghost" data-i18n="security.cta_full">Full security model →</a>
       </div>
 
       <div class="fade-in">
         <div class="check-list">
           <div class="check-item safe">
             <span class="check-ico">✓</span>
-            <div class="check-txt"><strong>Response authenticity</strong> — impossible to forge <code style="font-size:10px;color:var(--cyan);font-family:var(--mono)">/v1/nodes</code> without the controller's private key.</div>
+            <div class="check-txt" data-i18n-html="security.check_auth"><strong>Response authenticity</strong> — impossible to forge <code style="font-size:10px;color:var(--cyan);font-family:var(--mono)">/v1/nodes</code> without the controller's private key.</div>
           </div>
           <div class="check-item safe">
             <span class="check-ico">✓</span>
-            <div class="check-txt"><strong>Code integrity</strong> — controller files hashed and cross-checked at every startup. Tampering returns 503 before any traffic is served.</div>
+            <div class="check-txt" data-i18n-html="security.check_integrity"><strong>Code integrity</strong> — controller files hashed and cross-checked at every startup. Tampering returns 503 before any traffic is served.</div>
           </div>
           <div class="check-item safe">
             <span class="check-ico">✓</span>
-            <div class="check-txt"><strong>Node identity</strong> — nodes must sign registration with their own key. An attacker cannot register on behalf of another node's pubkey.</div>
+            <div class="check-txt" data-i18n-html="security.check_identity"><strong>Node identity</strong> — nodes must sign registration with their own key. An attacker cannot register on behalf of another node's pubkey.</div>
           </div>
           <div class="check-item safe">
             <span class="check-ico">✓</span>
-            <div class="check-txt"><strong>DNS hijack protection</strong> — .sol records live on Solana. An adversary needs to compromise the wallet, not just a DNS registrar.</div>
+            <div class="check-txt" data-i18n-html="security.check_dns"><strong>DNS hijack protection</strong> — .sol records live on Solana. An adversary needs to compromise the wallet, not just a DNS registrar.</div>
           </div>
           <div class="check-item safe">
             <span class="check-ico">✓</span>
-            <div class="check-txt"><strong>Handoff security</strong> — session transfers carry Ed25519-signed tokens with anti-replay, valid only 5 minutes. Target rejects unknown sources.</div>
+            <div class="check-txt" data-i18n-html="security.check_handoff"><strong>Handoff security</strong> — session transfers carry Ed25519-signed tokens with anti-replay, valid only 5 minutes. Target rejects unknown sources.</div>
           </div>
           <div class="check-item risk">
             <span class="check-ico">✗</span>
-            <div class="check-txt"><strong>Transport privacy</strong> — connection URL visible to your ISP / Cloudflare. Use the Tor mirror if metadata matters.</div>
+            <div class="check-txt" data-i18n-html="security.check_transport"><strong>Transport privacy</strong> — connection URL visible to your ISP / Cloudflare. Use the Tor mirror if metadata matters.</div>
           </div>
           <div class="check-item risk">
             <span class="check-ico">✗</span>
-            <div class="check-txt"><strong>Message content</strong> — NOT touched by the controller. End-to-end encrypted between users. Controller can read nothing even if fully compromised.</div>
+            <div class="check-txt" data-i18n-html="security.check_content"><strong>Message content</strong> — NOT touched by the controller. End-to-end encrypted between users. Controller can read nothing even if fully compromised.</div>
           </div>
           <div class="check-item risk">
             <span class="check-ico">✗</span>
-            <div class="check-txt"><strong>Host OS / kernel</strong> — if the VPS is rooted, keys can be stolen. Use hardware-backed signing for paranoid deployments.</div>
+            <div class="check-txt" data-i18n-html="security.check_host"><strong>Host OS / kernel</strong> — if the VPS is rooted, keys can be stolen. Use hardware-backed signing for paranoid deployments.</div>
           </div>
         </div>
       </div>
@@ -682,9 +688,12 @@
 <section class="section" id="s-access">
   <div class="section-inner">
     <div class="fade-in">
-      <div class="sec-label">ACCESS</div>
-      <h2 class="sec-heading">Always reachable.<br>Always yours.</h2>
-      <p class="sec-body">
+      <div class="sec-label" data-i18n="access.label">ACCESS</div>
+      <h2 class="sec-heading">
+        <span data-i18n="access.heading_line1">Always reachable.</span><br>
+        <span data-i18n="access.heading_line2">Always yours.</span>
+      </h2>
+      <p class="sec-body" data-i18n="access.body">
         Multiple entry points mean no single entity can block your access.
         Mirror sites serve the same signed content from independent infrastructure.
       </p>
@@ -692,39 +701,39 @@
 
     <div class="entry-grid fade-in">
       <div class="entry-card">
-        <span class="entry-tag badge badge-info">TUNNEL</span>
-        <div class="entry-title">Cloudflare tunnel</div>
-        <div class="entry-body">Free *.trycloudflare.com address. No account required. URL changes when the tunnel restarts — treat as ephemeral.</div>
+        <span class="entry-tag badge badge-info" data-i18n="access.tunnel_tag">TUNNEL</span>
+        <div class="entry-title" data-i18n="access.tunnel_title">Cloudflare tunnel</div>
+        <div class="entry-body" data-i18n="access.tunnel_body">Free *.trycloudflare.com address. No account required. URL changes when the tunnel restarts — treat as ephemeral.</div>
       </div>
       <div class="entry-card">
-        <span class="entry-tag badge badge-pur">TOR</span>
-        <div class="entry-title">Hidden service</div>
-        <div class="entry-body">.onion address, reachable only through Tor. Censor-proof and metadata-private, but slower. Needs a Tor client.</div>
+        <span class="entry-tag badge badge-pur" data-i18n="access.tor_tag">TOR</span>
+        <div class="entry-title" data-i18n="access.tor_title">Hidden service</div>
+        <div class="entry-body" data-i18n="access.tor_body">.onion address, reachable only through Tor. Censor-proof and metadata-private, but slower. Needs a Tor client.</div>
       </div>
       <div class="entry-card">
-        <span class="entry-tag badge badge-warn">IPFS</span>
-        <div class="entry-title">Distributed content</div>
-        <div class="entry-body">Content-addressed copy of the static frontend. Any IPFS gateway can serve it — no single server to block.</div>
+        <span class="entry-tag badge badge-warn" data-i18n="access.ipfs_tag">IPFS</span>
+        <div class="entry-title" data-i18n="access.ipfs_title">Distributed content</div>
+        <div class="entry-body" data-i18n="access.ipfs_body">Content-addressed copy of the static frontend. Any IPFS gateway can serve it — no single server to block.</div>
       </div>
       <div class="entry-card">
-        <span class="entry-tag badge badge-ok">DIRECT</span>
-        <div class="entry-title">Plain HTTPS</div>
-        <div class="entry-body">Regular domain + TLS. Fastest option. Blockable at DNS/IP level — fall back to others if censored.</div>
+        <span class="entry-tag badge badge-ok" data-i18n="access.direct_tag">DIRECT</span>
+        <div class="entry-title" data-i18n="access.direct_title">Plain HTTPS</div>
+        <div class="entry-body" data-i18n="access.direct_body">Regular domain + TLS. Fastest option. Blockable at DNS/IP level — fall back to others if censored.</div>
       </div>
     </div>
 
     <div class="fade-in">
       <div style="margin-bottom:28px">
-        <div class="sec-label" style="margin-bottom:10px">MIRRORS</div>
-        <p style="font-size:12px;line-height:1.8;color:var(--text2);font-family:var(--mono);max-width:580px">
+        <div class="sec-label" style="margin-bottom:10px" data-i18n="access.mirrors_label">MIRRORS</div>
+        <p style="font-size:12px;line-height:1.8;color:var(--text2);font-family:var(--mono);max-width:580px" data-i18n-html="access.mirrors_body">
           Alternative hosts serving the exact same signed content as this controller.
           Each mirror is periodically probed — a green dot means reachable within the last 5 minutes.
           Tor <code style="color:var(--cyan);font-size:10px">.onion</code> mirrors can't be health-checked without a local Tor proxy.
         </p>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="/entries" class="btn btn-ghost">Entry URLs →</a>
-        <a href="/mirrors" class="btn btn-ghost">Mirror sites →</a>
+        <a href="/entries" class="btn btn-ghost" data-i18n="access.cta_entries">Entry URLs →</a>
+        <a href="/mirrors" class="btn btn-ghost" data-i18n="access.cta_mirrors">Mirror sites →</a>
       </div>
     </div>
   </div>
@@ -733,46 +742,49 @@
 <section class="section" id="s-start">
   <div class="section-inner">
     <div class="fade-in">
-      <div class="sec-label">GET STARTED</div>
-      <h2 class="sec-heading">Join the network<br>in five steps</h2>
+      <div class="sec-label" data-i18n="start.label">GET STARTED</div>
+      <h2 class="sec-heading">
+        <span data-i18n="start.heading_line1">Join the network</span><br>
+        <span data-i18n="start.heading_line2">in five steps</span>
+      </h2>
     </div>
 
     <div class="split">
       <div class="fade-in">
         <ol class="steps">
-          <li><span><strong>Install Vortex</strong> on your device — mobile or desktop.</span></li>
-          <li><span>Pick <strong>Global</strong> network mode in the setup wizard.</span></li>
-          <li><span>Paste the controller URL (auto-resolved via SNS) or any <strong>entry URL</strong> from the Entries page.</span></li>
-          <li><span>Verify the <strong>pubkey in your app</strong> matches the controller fingerprint below. A mismatch means tampering.</span></li>
-          <li><span>You're connected. Node list, signatures, and routing are handled <strong>automatically</strong>.</span></li>
+          <li><span data-i18n-html="start.step1"><strong>Install Vortex</strong> on your device — mobile or desktop.</span></li>
+          <li><span data-i18n-html="start.step2">Pick <strong>Global</strong> network mode in the setup wizard.</span></li>
+          <li><span data-i18n-html="start.step3">Paste the controller URL (auto-resolved via SNS) or any <strong>entry URL</strong> from the Entries page.</span></li>
+          <li><span data-i18n-html="start.step4">Verify the <strong>pubkey in your app</strong> matches the controller fingerprint below. A mismatch means tampering.</span></li>
+          <li><span data-i18n-html="start.step5">You're connected. Node list, signatures, and routing are handled <strong>automatically</strong>.</span></li>
         </ol>
 
         <div>
-          <div class="sec-label" style="margin-bottom:10px">CONTROLLER FINGERPRINT</div>
+          <div class="sec-label" style="margin-bottom:10px" data-i18n="start.fingerprint_label">CONTROLLER FINGERPRINT</div>
           <div class="pubkey-box">
-            <code id="pubkey-text">loading…</code>
+            <code id="pubkey-text" data-i18n="start.loading">loading…</code>
           </div>
-          <p style="font-size:10px;color:var(--text3);font-family:var(--mono)">Pin this key in your client before trusting any response.</p>
+          <p style="font-size:10px;color:var(--text3);font-family:var(--mono)" data-i18n="start.fingerprint_note">Pin this key in your client before trusting any response.</p>
         </div>
       </div>
 
       <div class="fade-in">
-        <div class="sec-label" style="margin-bottom:16px">TREASURY &amp; REWARDS</div>
+        <div class="sec-label" style="margin-bottom:16px" data-i18n="treasury.label">TREASURY &amp; REWARDS</div>
 
         <div class="card">
-          <div class="card-title">On-chain transparency</div>
-          <div class="card-body">All protocol fees — node register fees and a 20% cut of premium subscriptions — flow to the treasury wallet on Solana. Every transaction is publicly verifiable by anyone.</div>
+          <div class="card-title" data-i18n="treasury.transparency_title">On-chain transparency</div>
+          <div class="card-body" data-i18n="treasury.transparency_body">All protocol fees — node register fees and a 20% cut of premium subscriptions — flow to the treasury wallet on Solana. Every transaction is publicly verifiable by anyone.</div>
         </div>
 
         <div class="card">
-          <div class="card-title">Operator rewards</div>
-          <div class="card-body">70% of each premium sub goes to the rewards pool, distributed pro-rata to active node operators. 20% funds core development. 10% burns or sits as insurance.</div>
+          <div class="card-title" data-i18n="treasury.rewards_title">Operator rewards</div>
+          <div class="card-body" data-i18n="treasury.rewards_body">70% of each premium sub goes to the rewards pool, distributed pro-rata to active node operators. 20% funds core development. 10% burns or sits as insurance.</div>
         </div>
 
         <div class="card" style="border-color:rgba(124,58,237,0.25)">
-          <div class="card-title" style="color:var(--purpleL)">Treasury address</div>
+          <div class="card-title" style="color:var(--purpleL)" data-i18n="treasury.address_title">Treasury address</div>
           <div class="pubkey-box" style="margin-top:10px;margin-bottom:0">
-            <code id="treasury-text">loading…</code>
+            <code id="treasury-text" data-i18n="start.loading">loading…</code>
           </div>
         </div>
       </div>
@@ -781,18 +793,19 @@
 </section>
 
 <footer>
-  <div>VORTEX CONTROLLER — <span id="foot-version">v1.0</span></div>
+  <div><span data-i18n="footer.brand">VORTEX CONTROLLER</span> — <span id="foot-version">v1.0</span></div>
   <div class="foot-links">
-    <a href="/nodes">Nodes</a>
-    <a href="/entries">Entries</a>
-    <a href="/mirrors">Mirrors</a>
-    <a href="/security">Security</a>
-    <a href="/admin">Treasury</a>
+    <a href="/nodes" data-i18n="nav.nodes">Nodes</a>
+    <a href="/entries" data-i18n="nav.entries">Entries</a>
+    <a href="/mirrors" data-i18n="nav.mirrors">Mirrors</a>
+    <a href="/security" data-i18n="nav.security">Security</a>
+    <a href="/admin" data-i18n="nav.treasury">Treasury</a>
   </div>
 </footer>
 
 <div id="perf-hud"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/chain.js"></script>
+<script src="js/i18n.js"></script>
 </body>
 </html>
