@@ -145,20 +145,20 @@
     // cx/cy/cz    = camera POSITION targets (cursor orbit is added on top).
     // Smooth lerp between adjacent presets as scrollY crosses section boundaries.
     const VIEWS = [
-        // hero: dead-on, eye level, far back
-        { crx:  0.00, cry:  0.00, crz:  0.00, cx: -2.0, cy:  0.0, cz: 12.0 },
+        // Hero: Top of chain - God view, looking down
+        { crx:  0.30, cry:  0.00, crz:  0.00, cx: -1.5, cy:  6.0, cz: 16.0 },
 
-        // network: top-down, almost vertical, centered
-        { crx:  1.20, cry:  0.00, crz:  0.00, cx: -1.5, cy:  2.5, cz: 6.0 },
+        // Network: Falling into the chain - dizzying angle
+        { crx:  1.40, cry:  0.60, crz:  0.30, cx: 2.0, cy:  3.5, cz: 10.0 },
 
-        // security: ground level, looking up from left, extreme tilt
-        { crx: -0.90, cry:  0.80, crz: -0.40, cx: -3.0, cy: -1.5, cz: 9.0 },
+        // Security: Spiraling around - wrap effect
+        { crx: 1.20, cry:  1.20, crz: 0.80, cx: -3.0, cy:  1.5, cz: 7.5 },
 
-        // access: complete side profile, chain end-on
-        { crx:  0.10, cry: -1.30, crz:  0.60, cx: -0.5, cy:  0.2, cz: 7.5 },
+        // Access: Inside the chain - intimate close-up
+        { crx:  0.80, cry: 1.80, crz:  1.20, cx: 0.5, cy: -0.5, cz: 5.0 },
 
-        // start: upside-down-ish, from right rear
-        { crx:  0.85, cry: -0.75, crz:  1.10, cx: -2.5, cy:  1.0, cz: 5.5 },
+        // Start: Bottom looking up - heroic angle
+        { crx:  1.20, cry: 0.80, crz:  1.50, cx: 2.5, cy: -4.0, cz: 2.6 },
     ];
 
     // Section IDs in DOM order (must match VIEWS array)
@@ -246,7 +246,7 @@
             }
 
             // Tiny natural imperfection so links don't look computer-perfect
-            link.rotation.z += (Math.random() - 1) * 0.5;
+            link.rotation.z += (Math.random() - 1) * 0.9;
 
             link.userData.baseX = link.position.x;
             link.userData.baseZ = link.position.z;
@@ -400,8 +400,8 @@
             const maxScroll  = Math.max(1, document.body.scrollHeight - window.innerHeight);
             const scrollFrac = Math.min(1, scrollY / maxScroll);
 
-            // Chain Y travel: top → bottom
-            chainTargetY = TRAVEL_HALF - scrollFrac * TRAVEL_HALF * 2;
+            // Chain Y travel:
+            chainTargetY = TRAVEL_HALF - scrollFrac * TRAVEL_HALF * 1.5;
 
             // Section blend: which section are we in?
             let si = 0;
