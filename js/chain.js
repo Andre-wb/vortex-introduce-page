@@ -131,9 +131,9 @@
     // per-link to get the correct plane.
 
     const CHAIN = {
-        low:    { n: 14, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.54, ts: 24, rs:  8 },
-        medium: { n: 20, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.54, ts: 44, rs: 12 },
-        high:   { n: 26, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.54, ts: 68, rs: 16 },
+        low:    { n: 14, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.7, ts: 24, rs:  8 },
+        medium: { n: 20, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.7, ts: 44, rs: 12 },
+        high:   { n: 26, RX: 0.34, RY: 0.60, TUBE: 0.10, SPACING: 0.7, ts: 68, rs: 16 },
     };
 
     // Camera base positions: the chain is at x=0 in scene space.
@@ -145,16 +145,20 @@
     // cx/cy/cz    = camera POSITION targets (cursor orbit is added on top).
     // Smooth lerp between adjacent presets as scrollY crosses section boundaries.
     const VIEWS = [
-        // hero: nearly front-on, chain slightly angled
-        { crx:  0.00, cry:  0.08, crz:  0.00, cx: -1.8, cy:  0.0, cz: 8.5 },
-        // network: chain rotated away from viewer on Y, tilts in X
-        { crx:  0.14, cry: -0.42, crz:  0.06, cx: -2.2, cy:  0.2, cz: 8.0 },
-        // security: chain faces the other side, dips in X
-        { crx: -0.12, cry:  0.58, crz: -0.05, cx: -1.4, cy: -0.3, cz: 7.8 },
-        // access: dramatic left rotation, slight lift
-        { crx:  0.22, cry: -0.68, crz:  0.08, cx: -2.0, cy:  0.3, cz: 8.2 },
-        // start: return to near-front with slight twist
-        { crx: -0.04, cry:  0.22, crz:  0.02, cx: -1.6, cy:  0.0, cz: 8.5 },
+        // hero: dead-on, eye level, far back
+        { crx:  0.00, cry:  0.00, crz:  0.00, cx: -2.0, cy:  0.0, cz: 12.0 },
+
+        // network: top-down, almost vertical, centered
+        { crx:  1.20, cry:  0.00, crz:  0.00, cx: -1.5, cy:  2.5, cz: 6.0 },
+
+        // security: ground level, looking up from left, extreme tilt
+        { crx: -0.90, cry:  0.80, crz: -0.40, cx: -3.0, cy: -1.5, cz: 9.0 },
+
+        // access: complete side profile, chain end-on
+        { crx:  0.10, cry: -1.30, crz:  0.60, cx: -0.5, cy:  0.2, cz: 7.5 },
+
+        // start: upside-down-ish, from right rear
+        { crx:  0.85, cry: -0.75, crz:  1.10, cx: -2.5, cy:  1.0, cz: 5.5 },
     ];
 
     // Section IDs in DOM order (must match VIEWS array)
@@ -217,8 +221,8 @@
         const halfH   = (n - 1) * SPACING * 0.5;
 
         // S-curve parameters
-        const SWAY_AMP  = 0.12;   // max X deviation from center
-        const SWAY_FREQ = 1.2;    // full sine periods across chain length
+        const SWAY_AMP  = 0.40;   // max X deviation from center
+        const SWAY_FREQ = 1.3;    // full sine periods across chain length
 
         const links = [];
 
@@ -226,7 +230,7 @@
             const isA  = i % 2 === 0;
             const link = new THREE.Mesh(isA ? geomA : geomB, mat);
 
-            const t = n > 1 ? i / (n - 1) : 0;   // 0 → 1 along chain
+            const t = n > 2 ? i / (n - 2) : 0;   // 0 → 1 along chain
 
             // Vertical position — centered at y=0
             link.position.y = halfH - i * SPACING;
@@ -242,7 +246,7 @@
             }
 
             // Tiny natural imperfection so links don't look computer-perfect
-            link.rotation.z += (Math.random() - 0.5) * 0.04;
+            link.rotation.z += (Math.random() - 1) * 0.5;
 
             link.userData.baseX = link.position.x;
             link.userData.baseZ = link.position.z;
@@ -441,8 +445,8 @@
         //    The offset lerps to 0 while scrolling for a clean feel.
         // ═══════════════════════════════════════════════════════════════════════
 
-        const ORBIT_X = 0.55;   // max camera X offset from cursor (left/right)
-        const ORBIT_Y = 0.30;   // max camera Y offset from cursor (up/down)
+        const ORBIT_X = 4;   // max camera X offset from cursor (left/right)
+        const ORBIT_Y = 4;   // max camera Y offset from cursor (up/down)
 
         let cursorNX = 0, cursorNY = 0;   // normalized −1→1
         let smCurX   = 0, smCurY   = 0;   // smoothed cursor

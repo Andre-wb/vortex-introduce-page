@@ -228,15 +228,7 @@ body{
 .section::before{
     content:'';
     position:absolute;inset:0;
-    background:linear-gradient(
-        90deg,
-        var(--bg) 0%,
-        var(--bg) 42%,
-        rgba(7,7,14,0.92) 58%,
-        rgba(7,7,14,0.76) 72%,
-        rgba(7,7,14,0.54) 85%,
-        rgba(7,7,14,0.32) 100%
-    );
+    background: rgba(0, 0, 0, 0.34);
     pointer-events:none;
     z-index:-1;
 }
@@ -414,6 +406,7 @@ body{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:0;margin-bottom:36px;
+    border-radius: 9px;
 }
 .flow-step{
     padding:22px 20px;
@@ -421,6 +414,7 @@ body{
     border:1px solid var(--border);
     border-top:2px solid transparent;
     margin:-1px 0 0 -1px;
+    border-radius: 9px;
 }
 .flow-step:nth-child(1){border-top-color:var(--purpleL)}
 .flow-step:nth-child(2){border-top-color:var(--cyan)}
