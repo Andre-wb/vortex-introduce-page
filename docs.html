@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>VORTEX — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg:      #07070e;
+      --bg2:     #0d0d1a;
+      --bg3:     #121222;
+      --bg4:     #181830;
+      --border:  rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --text:    #f2f2f8;
+      --text2:   #8888aa;
+      --text3:   #444466;
+      --purple:  #7c3aed;
+      --purpleL: #a855f7;
+      --cyan:    #06d6f0;
+      --cyanD:   #0ab8ce;
+      --green:   #22c55e;
+      --amber:   #f59e0b;
+      --red:     #ef4444;
+      --mono:    'JetBrains Mono', monospace;
+      --sans:    'Unbounded', sans-serif;
+      --radius:  12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100vh;
+      background-image:
+        radial-gradient(1200px 600px at 10% -10%, rgba(124,58,237,0.14), transparent 60%),
+        radial-gradient(900px 500px at 90% 110%, rgba(6,214,240,0.10), transparent 60%);
+    }
+
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center;
+      padding: 0 48px; height: 60px;
+      background: rgba(7,7,14,0.75);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.14em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 10px var(--purple), 0 0 20px rgba(124,58,237,0.4);
+    }
+    .nav-links {
+      display: flex; gap: 32px; margin-left: auto;
+    }
+    .nav-links a {
+      font-size: 10px; font-weight: 400; letter-spacing: 0.1em;
+      color: var(--text2); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text) }
+    .nav-links a.active { color: var(--text) }
+    .nav-links a.active::after {
+      content: '';
+      display: block;
+      height: 2px; margin-top: 6px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      border-radius: 2px;
+    }
+
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      padding-top: 60px;
+      min-height: 100vh;
+    }
+
+    .docs-tree {
+      position: sticky; top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0 40px;
+      background: rgba(13,13,26,0.55);
+      backdrop-filter: blur(10px);
+    }
+
+    .docs-tree::-webkit-scrollbar { width: 6px }
+    .docs-tree::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px }
+    .docs-tree::-webkit-scrollbar-track { background: transparent }
+
+    .docs-search {
+      margin: 0 16px 16px;
+      position: relative;
+    }
+    .docs-search input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px 9px 32px;
+      color: var(--text);
+      font: 12px/1.4 var(--mono);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .docs-search input::placeholder { color: var(--text3) }
+    .docs-search input:focus {
+      border-color: var(--purple);
+      background: rgba(124,58,237,0.06);
+    }
+    .docs-search::before {
+      content: '⌕';
+      position: absolute; left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .tree-group {
+      margin: 6px 0 10px;
+    }
+    .tree-root {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 20px;
+      font: 700 10px/1 var(--sans);
+      letter-spacing: 0.18em;
+      color: var(--text2);
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    .tree-root:hover { color: var(--text) }
+    .tree-root-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tree-root[data-root="vortex"]   .tree-root-dot { background: var(--purple);  box-shadow: 0 0 8px var(--purple) }
+    .tree-root[data-root="gravitix"] .tree-root-dot { background: var(--cyan);    box-shadow: 0 0 8px var(--cyan) }
+    .tree-root[data-root="architex"] .tree-root-dot { background: var(--amber);   box-shadow: 0 0 8px var(--amber) }
+
+    .tree-node {
+      display: flex; align-items: center;
+      padding: 4px 20px 4px 38px;
+      font: 12px/1.4 var(--mono);
+      color: var(--text2);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: color 0.12s, background 0.12s, border-color 0.12s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tree-node:hover { color: var(--text); background: rgba(255,255,255,0.02) }
+    .tree-node.active {
+      color: var(--text);
+      background: rgba(124,58,237,0.08);
+      border-left-color: var(--purple);
+    }
+    .tree-node.folder::before {
+      content: '▸';
+      display: inline-block;
+      width: 14px;
+      margin-left: -14px;
+      color: var(--text3);
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+    .tree-node.folder.open::before { transform: rotate(90deg) }
+    .tree-node.leaf::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 4px; border-radius: 50%;
+      margin-left: -10px; margin-right: 8px;
+      background: var(--text3);
+      flex-shrink: 0;
+    }
+    .tree-children { display: none }
+    .tree-children.open { display: block }
+    .tree-children .tree-node { padding-left: 56px }
+    .tree-children .tree-children .tree-node { padding-left: 74px }
+
+    .docs-content {
+      padding: 48px 64px 120px;
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .breadcrumb {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 6px;
+      font: 10px/1 var(--mono);
+      letter-spacing: 0.12em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .breadcrumb .sep { opacity: 0.5 }
+    .breadcrumb .seg.current { color: var(--text2) }
+
+    .docs-title {
+      font: 700 42px/1.1 var(--sans);
+      letter-spacing: -0.015em;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #fff 0%, #c0c0e0 70%, #9090ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .docs-subtitle {
+      font: 300 17px/1.5 var(--sans);
+      color: var(--text2);
+      margin-bottom: 36px;
+      max-width: 720px;
+    }
+
+    .docs-intro {
+      font: 400 15px/1.75 var(--sans);
+      color: var(--text);
+      background: rgba(124,58,237,0.05);
+      border-left: 3px solid var(--purple);
+      padding: 18px 22px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 36px;
+    }
+
+    .docs-content h3 {
+      font: 600 22px/1.3 var(--sans);
+      color: var(--text);
+      margin: 44px 0 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .docs-content h3:first-of-type { border-top: none; padding-top: 0 }
+
+    .docs-content p {
+      font: 400 15px/1.7 var(--sans);
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .docs-content p code,
+    .docs-content li code,
+    .docs-content td code {
+      font: 500 13px/1 var(--mono);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    .docs-content ul {
+      list-style: none;
+      margin: 8px 0 20px;
+      padding: 0;
+    }
+    .docs-content ul li {
+      font: 400 14.5px/1.7 var(--sans);
+      color: var(--text);
+      padding: 4px 0 4px 22px;
+      position: relative;
+    }
+    .docs-content ul li::before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 16px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 8px rgba(124,58,237,0.5);
+    }
+
+    .docs-content pre {
+      background: #0a0a18;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 18px 0 28px;
+      overflow-x: auto;
+      font: 500 13px/1.65 var(--mono);
+      color: #d4d4dc;
+    }
+    .docs-content pre .kw { color: var(--purpleL) }
+    .docs-content pre .str { color: var(--green) }
+    .docs-content pre .num { color: var(--amber) }
+    .docs-content pre .cmt { color: var(--text3); font-style: italic }
+    .docs-content pre .op { color: var(--cyan) }
+    .docs-content pre .fn { color: #ffd86e }
+
+    .docs-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0 32px;
+      font: 400 14px/1.55 var(--sans);
+      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .docs-content table tr { border-bottom: 1px solid var(--border) }
+    .docs-content table tr:last-child { border-bottom: none }
+    .docs-content table td {
+      padding: 11px 16px;
+      vertical-align: top;
+      color: var(--text);
+    }
+    .docs-content table td:first-child {
+      width: 36%;
+      border-right: 1px solid var(--border);
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .accordion {
+      margin: 12px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.015);
+      overflow: hidden;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .accordion:hover { border-color: var(--border2) }
+    .accordion.open {
+      border-color: rgba(124,58,237,0.35);
+      background: rgba(124,58,237,0.03);
+    }
+
+    .accordion-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font: 600 15px/1.4 var(--sans);
+      text-align: left;
+      cursor: pointer;
+      gap: 10px;
+    }
+    .accordion.no-toggle .accordion-btn { cursor: default }
+
+    .accordion-caret {
+      color: var(--text3);
+      font-size: 14px;
+      width: 14px;
+      flex-shrink: 0;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .accordion.open .accordion-caret {
+      transform: rotate(90deg);
+      color: var(--purple);
+    }
+    .accordion.no-toggle .accordion-caret { visibility: hidden }
+
+    .accordion-label {
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .accordion-summary {
+      color: var(--text2);
+      font-weight: 300;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .accordion-body {
+      display: none;
+      padding: 4px 20px 20px;
+      border-top: 1px dashed var(--border);
+    }
+    .accordion.open .accordion-body { display: block }
+    .accordion.no-toggle .accordion-body { display: block; border-top: none; padding-top: 0 }
+
+    .accordion-body .panel-label {
+      display: inline-block;
+      margin: 16px 0 8px;
+      padding: 3px 10px;
+      font: 600 10px/1 var(--sans);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(6,214,240,0.08);
+      border: 1px solid rgba(6,214,240,0.22);
+      border-radius: 12px;
+    }
+    .accordion-body .panel-label:first-child { margin-top: 8px }
+
+    .accordion-body p {
+      margin: 0 0 10px;
+    }
+
+    .accordion-body .formula {
+      background: #080816;
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 4px 0 8px;
+      font: 500 13px/1.7 var(--mono);
+      color: #d8d8e8;
+      overflow-x: auto;
+    }
+
+    .callout {
+      background: rgba(6,214,240,0.06);
+      border: 1px solid rgba(6,214,240,0.18);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 20px 0 28px;
+      font: 400 14px/1.65 var(--sans);
+      color: var(--text);
+      position: relative;
+    }
+    .callout::before {
+      content: 'NOTE';
+      position: absolute; top: -9px; left: 16px;
+      background: var(--bg);
+      padding: 0 8px;
+      font: 600 9px/1 var(--sans);
+      letter-spacing: 0.18em;
+      color: var(--cyan);
+    }
+
+    .glossary-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .glossary-item:last-child { border-bottom: none }
+    .glossary-item .term {
+      font: 500 14px/1.5 var(--mono);
+      color: var(--cyan);
+    }
+    .glossary-item .def {
+      font: 400 14px/1.6 var(--sans);
+      color: var(--text);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text3);
+      font: 300 15px/1.5 var(--sans);
+    }
+
+    .empty .hero-mark {
+      font-size: 60px;
+      line-height: 1;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .mobile-tree-toggle {
+      display: none;
+      position: fixed; bottom: 20px; right: 20px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.5);
+      cursor: pointer;
+      z-index: 300;
+      font-size: 20px;
+    }
+
+    @media (max-width: 960px) {
+      .docs-layout { grid-template-columns: 1fr }
+      .docs-tree {
+        position: fixed;
+        top: 60px; left: 0;
+        width: 300px; max-width: 85vw;
+        z-index: 150;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 8px 0 24px rgba(0,0,0,0.4);
+      }
+      .docs-tree.open { transform: translateX(0) }
+      .docs-content { padding: 32px 24px 120px }
+      .docs-title { font-size: 30px }
+      .mobile-tree-toggle { display: flex; align-items: center; justify-content: center }
+      .nav { padding: 0 20px }
+    }
+
+    footer {
+      padding: 36px 48px;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font: 400 11px/1.6 var(--mono);
+      text-align: center;
+    }
+    footer a { color: var(--text2); text-decoration: none }
+    footer a:hover { color: var(--text) }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="vortex-introduce.html" class="nav-brand">
+    <span class="nav-dot"></span>
+    <span data-i18n="nav.brand">VORTEX</span>
+  </a>
+  <div class="nav-links">
+    <a href="/nodes" data-i18n="nav.nodes">Nodes</a>
+    <a href="/entries" data-i18n="nav.entries">Entries</a>
+    <a href="/mirrors" data-i18n="nav.mirrors">Mirrors</a>
+    <a href="/security" data-i18n="nav.security">Security</a>
+    <a href="/admin" data-i18n="nav.treasury">Treasury</a>
+    <a href="docs.html" class="active" data-i18n="nav.docs">Docs</a>
+  </div>
+</nav>
+
+<div class="docs-layout">
+  <aside class="docs-tree" id="docs-tree">
+    <div class="docs-search">
+      <input id="tree-search" type="search" placeholder="Search docs…" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="tree-root"></div>
+  </aside>
+
+  <main class="docs-content" id="docs-content">
+    <div class="empty">
+      <div class="hero-mark">◆</div>
+      Pick a topic from the tree to start reading.
+    </div>
+  </main>
+</div>
+
+<button class="mobile-tree-toggle" id="mobile-toggle" aria-label="Toggle docs tree">≡</button>
+
+<footer>
+  <a href="vortex-introduce.html">vortexx.sol</a> · docs
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/docs.js"></script>
+
+</body>
+</html>
