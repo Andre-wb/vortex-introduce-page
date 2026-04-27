@@ -18,9 +18,13 @@
     --green:   #22c55e;
     --amber:   #f59e0b;
     --red:     #ef4444;
-    --mono:    'JetBrains Mono', monospace;
-    --sans:    'Unbounded', sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    --sans:    'Unbounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --radius:  12px;
+    --container: 1400px;
+    --hero-height: 300vh;
+    --section-padding: clamp(64px, 12vh, 110px);
+    --panel-width: min(720px, 85vw);
 }
 
 html{scroll-behavior:smooth}
@@ -37,9 +41,6 @@ body{
 html,body{scrollbar-width:none;-ms-overflow-style:none}
 
 /* ── CHAIN CANVAS — fixed full-screen background ─────────────────────────── */
-/* The chain 3D scene sits behind all content. It covers the full viewport   */
-/* but the Three.js camera is shifted LEFT so the chain appears on the RIGHT  */
-/* portion of the screen, leaving the left side for text content.            */
 
 #chain-canvas{
     position:fixed;
@@ -52,11 +53,7 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     pointer-events:none;
 }
 
-/* ── CSS3D PANELS — sections rotate with the chain ───────────────────────── */
-/* Each <section> is wrapped in a CSS3DObject parented to the chain group.    */
-/* They sit on a ring around the chain's Y axis; chain.rotation.y carries     */
-/* them with it. JS sets each panel's opacity per frame from cos(world-angle) */
-/* so only the front-facing panel reads — the others fade as they spin away.  */
+/* ── CSS3D PANELS — responsive sizing ───────────────────────────────────── */
 
 #css3d-root{
     position:fixed;
@@ -70,18 +67,32 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 .panel-3d{pointer-events:auto}
 
 .panel-3d{
-    position:absolute !important;   /* beat #hero's `position: relative` */
+    position:absolute !important;
     top:0 !important;left:0 !important;
-    width:720px;
-    height:auto !important;          /* beat #hero { height: 300vh } */
-    z-index:auto !important;         /* beat #hero { z-index: 1 } */
-    background:transparent;
-    color:var(--text);
-    backface-visibility:hidden;
-    will-change:opacity,transform;
-    /* CSS3DObject origin is the element center */
-    transform:translate(-50%,-50%);
+    width: var(--panel-width);
+    height: auto !important;
+    z-index: auto !important;
+    background: transparent;
+    color: var(--text);
+    backface-visibility: hidden;
+    will-change: opacity, transform;
+    transform: translate(-50%, -50%);
 }
+
+/* Adaptive panel sizing */
+@media (min-width: 1920px) {
+    :root { --panel-width: 800px; }
+}
+@media (max-width: 1200px) {
+    :root { --panel-width: min(680px, 85vw); }
+}
+@media (max-width: 768px) {
+    :root { --panel-width: min(540px, 90vw); }
+}
+@media (max-width: 640px) {
+    :root { --panel-width: 92vw; }
+}
+
 .panel-3d .hero-sticky,
 .panel-3d .section-inner,
 .panel-3d .hero-content{
@@ -99,9 +110,6 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 .panel-3d .scroll-hint{display:none !important}
 .panel-3d .fade-in{opacity:1;transform:none}
 
-/* Hero panel: ensure all its content is visible inside the 3D layer.
-   The original page styles set display/positioning that don't translate
-   to a CSS3DObject context — flatten everything to normal block flow. */
 .panel-3d#hero{display:block !important;visibility:visible !important}
 .panel-3d#hero .hero-eyebrow,
 .panel-3d#hero .hero-title,
@@ -115,10 +123,6 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 .panel-3d#hero .hero-title{display:block}
 .panel-3d#hero .hero-sub{display:block;max-width:none}
 .panel-3d#hero .hero-content{max-width:none;padding:0}
-/* Force every hero descendant fully visible — overrides any inline opacity:0,
-   leftover translateY, or filter:blur left by interrupted text-reveal animation
-   spans / setIntervals. The panel root is excluded from the opacity override so
-   updatePanelOpacities() can still fade it as the chain rotates. */
 .panel-3d#hero *{
     opacity:1 !important;
     filter:none !important;
@@ -132,56 +136,65 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     transform:none !important;
 }
 
-/* Compact every dense block so content-heavy sections (security in
-   particular) fit inside the panel without overflowing. */
-.panel-3d .sec-heading{font-size:24px;line-height:1.1;margin-bottom:6px}
-.panel-3d .sec-body{font-size:12px;line-height:1.4;margin-bottom:10px}
-.panel-3d .sec-label{font-size:10px;margin-bottom:4px}
-.panel-3d .keys-table{font-size:10px;margin-bottom:10px}
+/* Compact content for all screen sizes */
+.panel-3d .sec-heading{
+    font-size: clamp(18px, 3vw, 24px);
+    line-height:1.2;
+    margin-bottom:6px;
+}
+.panel-3d .sec-body{
+    font-size: clamp(10px, 2vw, 12px);
+    line-height:1.4;
+    margin-bottom:10px;
+}
+.panel-3d .sec-label{
+    font-size: clamp(8px, 1.8vw, 10px);
+    margin-bottom:4px;
+}
+.panel-3d .keys-table{font-size: clamp(9px, 1.8vw, 10px);margin-bottom:10px}
 .panel-3d .keys-table th,
 .panel-3d .keys-table td{padding:4px 8px}
 .panel-3d .trust-flow{gap:6px;margin:10px 0;display:grid;grid-template-columns:1fr 1fr}
 .panel-3d .flow-step{padding:6px 8px}
 .panel-3d .flow-n{font-size:8px}
-.panel-3d .flow-t{font-size:11px}
-.panel-3d .flow-d{font-size:10px;line-height:1.35}
+.panel-3d .flow-t{font-size: clamp(10px, 2vw, 11px)}
+.panel-3d .flow-d{font-size: clamp(9px, 1.8vw, 10px);line-height:1.35}
 .panel-3d .check-list{gap:4px}
-.panel-3d .check-item{padding:4px 6px;font-size:10px;line-height:1.35}
+.panel-3d .check-item{padding:4px 6px;font-size: clamp(9px, 1.8vw, 10px);line-height:1.35}
 .panel-3d .stats-grid{gap:8px}
 .panel-3d .stat{padding:10px}
-.panel-3d .stat-v{font-size:22px}
+.panel-3d .stat-v{font-size: clamp(18px, 4vw, 22px)}
 .panel-3d .verif-row{gap:6px;margin:10px 0}
 .panel-3d .verif-card{padding:8px}
-.panel-3d .verif-body{font-size:10px;line-height:1.35}
-/* Stack two-column layouts vertically inside panels — they fit better */
+.panel-3d .verif-body{font-size: clamp(9px, 1.8vw, 10px);line-height:1.35}
 .panel-3d .split{display:flex;flex-direction:column;gap:12px}
 .panel-3d .entry-grid{gap:6px}
 .panel-3d .entry-card{padding:8px}
-.panel-3d .entry-body{font-size:10px;line-height:1.35}
-.panel-3d .steps li{font-size:12px;padding:4px 0}
+.panel-3d .entry-body{font-size: clamp(9px, 1.8vw, 10px);line-height:1.35}
+.panel-3d .steps li{font-size: clamp(10px, 2vw, 12px);padding:4px 0}
 .panel-3d .card{padding:8px;margin-bottom:6px}
-.panel-3d .card-body{font-size:10px;line-height:1.35}
-.panel-3d .hero-title{font-size:36px;line-height:1.05}
-.panel-3d .hero-sub{font-size:13px;line-height:1.45}
-/* The security panel is the densest — strip a few chrome elements to fit */
+.panel-3d .card-body{font-size: clamp(9px, 1.8vw, 10px);line-height:1.35}
+.panel-3d .hero-title{font-size: clamp(24px, 5vw, 36px);line-height:1.1}
+.panel-3d .hero-sub{font-size: clamp(11px, 2.2vw, 13px);line-height:1.45}
 .panel-3d#s-security .btn-ghost{display:none}
 
-/* Native scroll is disabled — section navigation is wheel/swipe-based.       */
 #scroll-spacer{display:none}
 
-/* ── NAV ─────────────────────────────────────────────────────────────────── */
+/* ── NAV — responsive ────────────────────────────────────────────────────── */
 
 .nav{
     position:fixed;top:0;left:0;right:0;z-index:200;
     display:flex;align-items:center;
-    padding:0 48px;height:60px;
+    padding:0 clamp(20px, 5vw, 48px);
+    height: clamp(50px, 8vh, 60px);
     background:rgba(7,7,14,0.78);
     backdrop-filter:blur(20px) saturate(1.4);
     border-bottom:1px solid var(--border);
 }
 .nav-brand{
     display:flex;align-items:center;gap:10px;
-    font-size:13px;font-weight:700;letter-spacing:0.14em;
+    font-size: clamp(11px, 2vw, 13px);
+    font-weight:700;letter-spacing:0.14em;
     color:var(--text);text-decoration:none;
 }
 .nav-dot{
@@ -190,28 +203,27 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     box-shadow:0 0 10px var(--purple),0 0 20px rgba(124,58,237,0.4);
 }
 .nav-links{
-    display:flex;gap:32px;margin-left:auto;
+    display:flex;gap:clamp(20px, 4vw, 32px);
+    margin-left:auto;
 }
 .nav-links a{
-    font-size:10px;font-weight:400;letter-spacing:0.1em;
+    font-size: clamp(9px, 2vw, 10px);
+    font-weight:400;letter-spacing:0.1em;
     color:var(--text2);text-decoration:none;
     transition:color 0.2s;
+    white-space:nowrap;
 }
 .nav-links a:hover{color:var(--text)}
 
 @media(max-width:640px){
-    .nav{padding:0 20px}
     .nav-links{display:none}
 }
 
-/* ── HERO ────────────────────────────────────────────────────────────────── */
-/* Hero is 300vh tall. The sticky wrapper makes the text content stay fixed  */
-/* while the user scrolls through the hero zone. The canvas (chain) is fixed */
-/* separately behind everything.                                              */
+/* ── HERO — fully responsive ─────────────────────────────────────────────── */
 
 #hero{
     position:relative;
-    height:300vh;
+    height: var(--hero-height);
     z-index:1;
 }
 
@@ -221,23 +233,22 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     pointer-events:none;
 }
 
-/* Left-side readability gradient — covers text area, fades right toward chain */
 .hero-grad{
     position:absolute;inset:0;
     background:linear-gradient(
-        98deg,
-        rgba(7,7,14,0.97) 0%,
-        rgba(7,7,14,0.88) 34%,
-        rgba(7,7,14,0.55) 56%,
-        rgba(7,7,14,0.18) 74%,
-        transparent 90%
+            98deg,
+            rgba(7,7,14,0.97) 0%,
+            rgba(7,7,14,0.88) 34%,
+            rgba(7,7,14,0.55) 56%,
+            rgba(7,7,14,0.18) 74%,
+            transparent 90%
     );
     pointer-events:none;
 }
 
 .hero-vignette{
     position:absolute;left:0;right:0;bottom:0;
-    height:200px;
+    height:clamp(100px, 20vh, 200px);
     background:linear-gradient(to top,var(--bg),transparent);
     pointer-events:none;
 }
@@ -246,31 +257,41 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     position:absolute;inset:0;
     display:flex;flex-direction:column;
     justify-content:center;
-    padding:0 80px;
-    max-width:640px;
+    padding:0 clamp(20px, 6vw, 80px);
+    max-width: min(640px, 90%);
     pointer-events:all;
 }
 
 @media(max-width:768px){
-    .hero-content{padding:0 28px;max-width:100%}
+    .hero-content{max-width: 100%;}
 }
 
 .hero-eyebrow{
-    font-size:10px;letter-spacing:0.22em;
-    color:var(--cyan);font-family:var(--mono);
-    margin-bottom:22px;
-    display:flex;align-items:center;gap:10px;
+    font-size: clamp(9px, 2vw, 10px);
+    letter-spacing:0.22em;
+    color:var(--cyan);
+    font-family:var(--mono);
+    margin-bottom:clamp(16px, 4vh, 22px);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
 }
 .hero-eyebrow::before{
-    content:'';display:block;
-    width:32px;height:1px;background:var(--cyan);opacity:0.6;
+    content:'';
+    display:block;
+    width:clamp(24px, 4vw, 32px);
+    height:1px;
+    background:var(--cyan);
+    opacity:0.6;
 }
 
 .hero-title{
-    font-size:clamp(40px,6.5vw,84px);
-    font-weight:700;line-height:1.04;
+    font-size:clamp(36px, 8vw, 84px);
+    font-weight:700;
+    line-height:1.08;
     letter-spacing:-0.025em;
-    margin-bottom:24px;
+    margin-bottom:clamp(18px, 4vh, 24px);
 }
 .hero-title em{
     font-style:normal;
@@ -281,33 +302,48 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 }
 
 .hero-sub{
-    font-size:13px;line-height:1.85;
-    color:var(--text2);font-family:var(--mono);
-    margin-bottom:36px;
-    max-width:400px;
+    font-size: clamp(12px, 2.5vw, 13px);
+    line-height:1.7;
+    color:var(--text2);
+    font-family:var(--mono);
+    margin-bottom:clamp(24px, 6vh, 36px);
+    max-width: min(400px, 100%);
 }
 
 .hero-badges{
-    display:flex;gap:8px;flex-wrap:wrap;
-    margin-bottom:36px;
+    display:flex;
+    gap:clamp(6px, 2vw, 8px);
+    flex-wrap:wrap;
+    margin-bottom:clamp(24px, 6vh, 36px);
 }
 
 .hero-cta{
-    display:flex;gap:12px;flex-wrap:wrap;
+    display:flex;
+    gap:clamp(8px, 2vw, 12px);
+    flex-wrap:wrap;
 }
 
 .scroll-hint{
-    position:absolute;bottom:28px;left:50%;
+    position:absolute;
+    bottom:clamp(15px, 4vh, 28px);
+    left:50%;
     transform:translateX(-50%);
-    display:flex;flex-direction:column;align-items:center;gap:7px;
-    opacity:0.40;pointer-events:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+    opacity:0.40;
+    pointer-events:none;
 }
 .scroll-hint span{
-    font-size:9px;letter-spacing:0.2em;
-    color:var(--text2);font-family:var(--mono);
+    font-size: clamp(8px, 2vw, 9px);
+    letter-spacing:0.2em;
+    color:var(--text2);
+    font-family:var(--mono);
 }
 .scroll-line{
-    width:1px;height:36px;
+    width:1px;
+    height:clamp(24px, 6vh, 36px);
     background:linear-gradient(to bottom,var(--text2),transparent);
     animation:scrollPulse 2s ease-in-out infinite;
 }
@@ -328,19 +364,15 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 }
 #perf-hud.show{opacity:1}
 
-/* ── SECTIONS ─────────────────────────────────────────────────────────────── */
-/* Sections sit above the canvas (z-index:2) and have a gradient background  */
-/* that covers the left portion solidly and fades to semi-transparent on the  */
-/* right, letting the chain show through on the right side of the page.       */
+/* ── SECTIONS — fully responsive ─────────────────────────────────────────── */
 
 .section{
     position:relative;
     z-index:2;
-    padding:110px 0;
+    padding: var(--section-padding) 0;
     border-top:1px solid var(--border);
 }
 
-/* Left-solid → right-transparent gradient so chain is visible on the right */
 .section::before{
     content:'';
     position:absolute;inset:0;
@@ -350,20 +382,22 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 }
 
 .section-inner{
-    max-width:1080px;margin:0 auto;
-    padding:0 80px;
+    max-width: var(--container);
+    margin:0 auto;
+    padding:0 clamp(20px, 5vw, 80px);
     position:relative;
 }
 
 @media(max-width:768px){
-    .section-inner{padding:0 28px}
-    .section{padding:64px 0}
+    .section{padding:clamp(48px, 8vh, 64px) 0}
 }
 
 .sec-label{
-    font-size:9px;letter-spacing:0.22em;
-    color:var(--purpleL);font-family:var(--mono);
-    margin-bottom:16px;
+    font-size: clamp(9px, 2vw, 9px);
+    letter-spacing:0.22em;
+    color:var(--purpleL);
+    font-family:var(--mono);
+    margin-bottom:clamp(12px, 3vh, 16px);
 }
 .sec-label-sm{
     margin-bottom:10px;
@@ -373,14 +407,16 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 }
 
 .sec-heading{
-    font-size:clamp(26px,3.8vw,46px);
-    font-weight:700;line-height:1.12;
+    font-size:clamp(28px, 6vw, 46px);
+    font-weight:700;line-height:1.15;
     letter-spacing:-0.025em;
-    margin-bottom:18px;
+    margin-bottom:clamp(14px, 3vh, 18px);
 }
 .sec-body{
-    font-size:13px;line-height:1.9;color:var(--text2);
-    max-width:540px;margin-bottom:52px;
+    font-size: clamp(12px, 2.5vw, 13px);
+    line-height:1.7;color:var(--text2);
+    max-width:min(540px, 100%);
+    margin-bottom:clamp(32px, 8vh, 52px);
     font-family:var(--mono);
 }
 
@@ -388,10 +424,14 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 
 .badge{
     display:inline-flex;align-items:center;gap:5px;
-    padding:5px 11px;
-    font-size:10px;font-weight:500;letter-spacing:0.07em;
+    padding:5px clamp(8px, 2vw, 11px);
+    font-size: clamp(9px, 2vw, 10px);
+    font-weight:500;letter-spacing:0.07em;
     border-radius:5px;font-family:var(--mono);
     white-space:nowrap;
+}
+@media(max-width:480px){
+    .badge{white-space:normal;}
 }
 .badge-ok  {background:rgba(34,197,94,0.10);color:#4ade80;border:1px solid rgba(34,197,94,0.22)}
 .badge-info{background:rgba(59,130,246,0.10);color:#60a5fa;border:1px solid rgba(59,130,246,0.22)}
@@ -402,8 +442,9 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 
 .btn{
     display:inline-flex;align-items:center;gap:8px;
-    padding:11px 22px;
-    font-size:11px;font-weight:600;letter-spacing:0.09em;
+    padding:clamp(9px, 2vh, 11px) clamp(18px, 4vw, 22px);
+    font-size: clamp(10px, 2vw, 11px);
+    font-weight:600;letter-spacing:0.09em;
     border-radius:8px;text-decoration:none;cursor:pointer;
     transition:all 0.18s ease;border:none;
     font-family:var(--sans);
@@ -422,49 +463,56 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 }
 .btn-ghost:hover{border-color:rgba(255,255,255,0.3);color:var(--text)}
 
-/* Button group — replaces inline display:flex containers */
 .btn-group{
-    display:flex;gap:12px;flex-wrap:wrap;
+    display:flex;gap:clamp(8px, 2vw, 12px);
+    flex-wrap:wrap;
 }
 
-/* ── STATS GRID ──────────────────────────────────────────────────────────── */
+/* ── STATS GRID — adaptive grid ──────────────────────────────────────────── */
 
 .stats-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
-    gap:12px;margin-bottom:52px;
+    grid-template-columns:repeat(auto-fit,minmax(clamp(140px, 20vw, 168px), 1fr));
+    gap:clamp(10px, 2vw, 12px);
+    margin-bottom:clamp(32px, 8vh, 52px);
 }
 .stat{
-    padding:20px 22px;
+    padding:clamp(16px, 3vh, 20px) clamp(18px, 4vw, 22px);
     background:var(--bg2);
     border:1px solid var(--border);
     border-radius:var(--radius);
 }
 .stat-k{
-    font-size:9px;color:var(--text2);letter-spacing:0.1em;
-    font-family:var(--mono);margin-bottom:10px;
+    font-size:clamp(8px, 2vw, 9px);
+    color:var(--text2);letter-spacing:0.1em;
+    font-family:var(--mono);margin-bottom:clamp(8px, 2vh, 10px);
 }
 .stat-v{
-    font-size:30px;font-weight:700;letter-spacing:-0.03em;
+    font-size:clamp(24px, 5vw, 30px);
+    font-weight:700;letter-spacing:-0.03em;
     line-height:1;
 }
-
-/* Smaller suffix (%, unit) inside a stat-v */
 .stat-pct{
-    font-size:15px;font-weight:400;
+    font-size:clamp(12px, 2.5vw, 15px);
+    font-weight:400;
 }
-
-.stat-sub{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:6px}
+.stat-sub{
+    font-size:clamp(9px, 2vw, 10px);
+    color:var(--text2);
+    font-family:var(--mono);
+    margin-top:6px;
+}
 
 /* ── VERIFICATION CARDS ──────────────────────────────────────────────────── */
 
 .verif-row{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(216px,1fr));
-    gap:12px;margin-bottom:44px;
+    grid-template-columns:repeat(auto-fit,minmax(clamp(180px, 25vw, 216px), 1fr));
+    gap:clamp(10px, 2vw, 12px);
+    margin-bottom:clamp(32px, 8vh, 44px);
 }
 .verif-card{
-    padding:22px;
+    padding:clamp(16px, 3vh, 22px);
     background:var(--bg2);border:1px solid var(--border);
     border-radius:var(--radius);
     transition:border-color 0.2s;
@@ -472,39 +520,46 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 .verif-card:hover{border-color:rgba(124,58,237,0.35)}
 .verif-head{
     display:flex;align-items:center;gap:10px;margin-bottom:10px;
+    flex-wrap:wrap;
 }
-/* The label text inside verif-head */
 .verif-head strong{
-    font-size:12px;font-weight:600;
+    font-size:clamp(11px, 2.2vw, 12px);
+    font-weight:600;
 }
 .verif-body{
-    font-size:11px;line-height:1.75;color:var(--text2);
+    font-size:clamp(10px, 2vw, 11px);
+    line-height:1.6;color:var(--text2);
     font-family:var(--mono);
 }
 
-/* ── SPLIT LAYOUT ────────────────────────────────────────────────────────── */
+/* ── SPLIT LAYOUT — responsive column switch ─────────────────────────────── */
 
 .split{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:64px;align-items:start;
+    grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap:clamp(32px, 6vw, 64px);
+    align-items:start;
 }
-@media(max-width:900px){.split{grid-template-columns:1fr}}
+@media(min-width:901px){
+    .split{grid-template-columns:1fr 1fr;}
+}
 
-/* ── KEYS TABLE ──────────────────────────────────────────────────────────── */
+/* ── KEYS TABLE — responsive columns ─────────────────────────────────────── */
 
 .keys-table{
     width:100%;border-collapse:collapse;
-    font-size:11px;font-family:var(--mono);
-    margin-bottom:36px;
+    font-size:clamp(10px, 2vw, 11px);
+    font-family:var(--mono);
+    margin-bottom:clamp(24px, 6vh, 36px);
 }
 .keys-table th{
-    text-align:left;padding:8px 14px;
+    text-align:left;padding:8px clamp(8px, 2vw, 14px);
     color:var(--text2);font-weight:400;letter-spacing:0.07em;
-    border-bottom:1px solid var(--border2);font-size:9px;
+    border-bottom:1px solid var(--border2);
+    font-size:clamp(8px, 1.8vw, 9px);
 }
 .keys-table td{
-    padding:11px 14px;
+    padding:clamp(8px, 2vh, 11px) clamp(8px, 2vw, 14px);
     border-bottom:1px solid var(--border);
     line-height:1.5;vertical-align:top;
 }
@@ -515,47 +570,66 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     .keys-table th:nth-child(3),
     .keys-table td:nth-child(3){display:none}
 }
+@media(max-width:480px){
+    .keys-table th:nth-child(2),
+    .keys-table td:nth-child(2){display:none}
+}
 
-/* ── TRUST FLOW ──────────────────────────────────────────────────────────── */
+/* ── TRUST FLOW — responsive grid ───────────────────────────────────────── */
 
 .trust-flow{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:0;margin-bottom:36px;
-    border-radius: 9px;
+    grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap:0;
+    margin-bottom:clamp(24px, 6vh, 36px);
+    border-radius:9px;
 }
 .flow-step{
-    padding:22px 20px;
+    padding:clamp(16px, 3vh, 22px) clamp(16px, 3vw, 20px);
     background:var(--bg2);
     border:1px solid var(--border);
     border-top:2px solid transparent;
     margin:-1px 0 0 -1px;
-    border-radius: 9px;
+    border-radius:9px;
 }
 .flow-step:nth-child(1){border-top-color:var(--purpleL)}
 .flow-step:nth-child(2){border-top-color:var(--cyan)}
 .flow-n{
-    font-size:9px;letter-spacing:0.12em;
-    color:var(--text3);font-family:var(--mono);
+    font-size:clamp(8px, 1.8vw, 9px);
+    letter-spacing:0.12em;
+    color:var(--text3);
+    font-family:var(--mono);
     margin-bottom:10px;
 }
-.flow-t{font-size:12px;font-weight:600;margin-bottom:8px;letter-spacing:0.02em}
+.flow-t{
+    font-size:clamp(11px, 2.2vw, 12px);
+    font-weight:600;
+    margin-bottom:8px;
+    letter-spacing:0.02em;
+}
 .flow-d{
-    font-size:11px;line-height:1.75;color:var(--text2);
+    font-size:clamp(10px, 2vw, 11px);
+    line-height:1.6;
+    color:var(--text2);
     font-family:var(--mono);
 }
 .flow-d code{
-    background:rgba(124,58,237,0.14);color:var(--purpleL);
-    padding:1px 5px;border-radius:3px;font-family:var(--mono);
-    font-size:10px;
+    background:rgba(124,58,237,0.14);
+    color:var(--purpleL);
+    padding:1px 5px;
+    border-radius:3px;
+    font-family:var(--mono);
+    font-size:clamp(9px, 1.8vw, 10px);
 }
 
-/* ── CHECK LIST ──────────────────────────────────────────────────────────── */
+/* ── CHECK LIST — responsive ─────────────────────────────────────────────── */
 
-.check-list{display:flex;flex-direction:column;gap:9px}
+.check-list{display:flex;flex-direction:column;gap:clamp(8px, 2vh, 9px)}
 .check-item{
-    display:flex;align-items:flex-start;gap:12px;
-    padding:13px 16px;border-radius:9px;
+    display:flex;align-items:flex-start;
+    gap:clamp(10px, 2vw, 12px);
+    padding:clamp(10px, 2vh, 13px) clamp(12px, 3vw, 16px);
+    border-radius:9px;
 }
 .check-item.safe{
     background:rgba(34,197,94,0.05);
@@ -566,29 +640,38 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
     border:1px solid rgba(239,68,68,0.14);
 }
 .check-ico{
-    font-size:11px;flex-shrink:0;margin-top:1px;
+    font-size:clamp(10px, 2vw, 11px);
+    flex-shrink:0;margin-top:1px;
     font-family:var(--mono);font-weight:500;
 }
 .check-item.safe .check-ico{color:var(--green)}
 .check-item.risk .check-ico{color:var(--red)}
-.check-txt{font-size:11px;line-height:1.7;color:var(--text2);font-family:var(--mono)}
+.check-txt{
+    font-size:clamp(10px, 2vw, 11px);
+    line-height:1.6;
+    color:var(--text2);
+    font-family:var(--mono);
+}
 .check-txt strong{color:var(--text);font-weight:500}
-/* Inline code inside check items */
 .check-txt code{
-    font-size:10px;color:var(--cyan);font-family:var(--mono);
+    font-size:clamp(9px, 1.8vw, 10px);
+    color:var(--cyan);
+    font-family:var(--mono);
     background:rgba(6,214,240,0.08);
-    padding:1px 5px;border-radius:3px;
+    padding:1px 5px;
+    border-radius:3px;
 }
 
-/* ── ENTRY CARDS ─────────────────────────────────────────────────────────── */
+/* ── ENTRY CARDS — adaptive grid ────────────────────────────────────────── */
 
 .entry-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(218px,1fr));
-    gap:12px;margin-bottom:44px;
+    grid-template-columns:repeat(auto-fit, minmax(clamp(180px, 25vw, 218px), 1fr));
+    gap:clamp(10px, 2vw, 12px);
+    margin-bottom:clamp(32px, 8vh, 44px);
 }
 .entry-card{
-    padding:22px;
+    padding:clamp(16px, 3vh, 22px);
     background:var(--bg2);border:1px solid var(--border);
     border-radius:var(--radius);
     transition:border-color 0.2s,transform 0.2s;
@@ -596,117 +679,142 @@ html,body{scrollbar-width:none;-ms-overflow-style:none}
 .entry-card:hover{border-color:var(--border2);transform:translateY(-2px)}
 .entry-tag{
     display:inline-block;
-    margin-bottom:14px;
+    margin-bottom:clamp(10px, 2vh, 14px);
 }
-.entry-title{font-size:13px;font-weight:600;margin-bottom:8px;letter-spacing:0.01em}
-.entry-body{font-size:11px;line-height:1.75;color:var(--text2);font-family:var(--mono)}
+.entry-title{
+    font-size:clamp(12px, 2.5vw, 13px);
+    font-weight:600;
+    margin-bottom:8px;
+    letter-spacing:0.01em;
+}
+.entry-body{
+    font-size:clamp(10px, 2vw, 11px);
+    line-height:1.6;
+    color:var(--text2);
+    font-family:var(--mono);
+}
 
 /* ── MIRRORS BLOCK ───────────────────────────────────────────────────────── */
-/* Previously styled inline, now a proper class block */
 
-.mirrors-block{
-    margin-bottom:28px;
-}
+.mirrors-block{margin-bottom:clamp(20px, 5vh, 28px);}
 .mirrors-desc{
-    font-size:12px;line-height:1.8;
-    color:var(--text2);font-family:var(--mono);
-    max-width:580px;
+    font-size:clamp(11px, 2.2vw, 12px);
+    line-height:1.7;
+    color:var(--text2);
+    font-family:var(--mono);
+    max-width:min(580px, 100%);
 }
 .mirrors-desc code{
-    color:var(--cyan);font-size:10px;font-family:var(--mono);
+    color:var(--cyan);
+    font-size:clamp(9px, 1.8vw, 10px);
+    font-family:var(--mono);
 }
 
 /* ── CARDS ───────────────────────────────────────────────────────────────── */
 
 .card{
-    padding:24px;
+    padding:clamp(18px, 3vh, 24px);
     background:var(--bg2);border:1px solid var(--border);
     border-radius:var(--radius);margin-bottom:14px;
     transition:border-color 0.2s;
 }
 .card:hover{border-color:var(--border2)}
-.card-title{font-size:13px;font-weight:600;margin-bottom:10px;letter-spacing:0.01em}
-.card-body{font-size:11px;line-height:1.75;color:var(--text2);font-family:var(--mono)}
-
-/* Treasury card variant */
-.card-treasury{
-    border-color:rgba(124,58,237,0.25);
+.card-title{
+    font-size:clamp(12px, 2.5vw, 13px);
+    font-weight:600;
+    margin-bottom:10px;
+    letter-spacing:0.01em;
 }
-.card-treasury:hover{
-    border-color:rgba(168,85,247,0.45);
+.card-body{
+    font-size:clamp(10px, 2vw, 11px);
+    line-height:1.6;
+    color:var(--text2);
+    font-family:var(--mono);
 }
-.card-title-purple{
-    color:var(--purpleL);
-}
+.card-treasury{border-color:rgba(124,58,237,0.25);}
+.card-treasury:hover{border-color:rgba(168,85,247,0.45);}
+.card-title-purple{color:var(--purpleL);}
 
 /* ── STEPS LIST ──────────────────────────────────────────────────────────── */
 
-.steps{list-style:none;counter-reset:step;margin-bottom:36px}
+.steps{list-style:none;counter-reset:step;margin-bottom:clamp(24px, 6vh, 36px)}
 .steps li{
-    display:flex;align-items:flex-start;gap:16px;
-    padding:15px 0;border-bottom:1px solid var(--border);
+    display:flex;align-items:flex-start;gap:clamp(12px, 2.5vw, 16px);
+    padding:clamp(12px, 2vh, 15px) 0;
+    border-bottom:1px solid var(--border);
 }
 .steps li::before{
     counter-increment:step;
     content:"0"counter(step);
-    font-size:10px;font-family:var(--mono);color:var(--purpleL);
+    font-size:clamp(9px, 2vw, 10px);
+    font-family:var(--mono);color:var(--purpleL);
     flex-shrink:0;margin-top:3px;letter-spacing:0.06em;
 }
-.steps li span{font-size:12px;line-height:1.75;color:var(--text2);font-family:var(--mono)}
+.steps li span{
+    font-size:clamp(11px, 2.2vw, 12px);
+    line-height:1.6;
+    color:var(--text2);
+    font-family:var(--mono);
+}
 .steps li strong{color:var(--text);font-weight:500}
 
 /* ── PUBKEY BOX ──────────────────────────────────────────────────────────── */
 
 .pubkey-box{
-    display:flex;align-items:center;gap:10px;
-    padding:12px 16px;
+    display:flex;align-items:center;
+    gap:clamp(8px, 2vw, 10px);
+    flex-wrap:wrap;
+    padding:clamp(10px, 2vh, 12px) clamp(12px, 3vw, 16px);
     background:var(--bg3);border:1px solid var(--border);
     border-radius:8px;margin-bottom:8px;
 }
-/* Variant: no external margin, used inside a card */
-.pubkey-box-flush{
-    margin-top:10px;margin-bottom:0;
-}
+.pubkey-box-flush{margin-top:10px;margin-bottom:0;}
 .pubkey-box code{
-    font-size:11px;font-family:var(--mono);
-    color:var(--cyan);flex:1;word-break:break-all;
+    font-size:clamp(10px, 1.8vw, 11px);
+    font-family:var(--mono);
+    color:var(--cyan);
+    flex:1;
+    word-break:break-all;
+    min-width:100px;
 }
 
 /* ── FINGERPRINT BLOCK ───────────────────────────────────────────────────── */
-/* Wraps sec-label + pubkey-box + hint-text */
 
-.fingerprint-block{
-    margin-top:0;
-}
-/* Hint text below pubkey-box */
+.fingerprint-block{margin-top:0;}
 .hint-text{
-    font-size:10px;color:var(--text3);font-family:var(--mono);
+    font-size:clamp(9px, 1.8vw, 10px);
+    color:var(--text3);
+    font-family:var(--mono);
 }
 
 /* ── TREASURY COLUMN ─────────────────────────────────────────────────────── */
-/* Contains sec-label and cards for treasury section */
-.treasury-col-label{
-    margin-bottom:16px;
-}
 
-/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+.treasury-col-label{margin-bottom:16px;}
+
+/* ── FOOTER — responsive spacing ─────────────────────────────────────────── */
 
 footer{
     position:relative;z-index:2;
-    padding:40px 80px;
+    padding:clamp(30px, 5vh, 40px) clamp(20px, 5vw, 80px);
     border-top:1px solid var(--border);
     background:var(--bg);
-    display:flex;justify-content:space-between;align-items:center;
-    font-size:10px;color:var(--text2);font-family:var(--mono);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:clamp(16px, 3vh, 24px);
+    font-size:clamp(9px, 1.8vw, 10px);
+    color:var(--text2);
+    font-family:var(--mono);
     letter-spacing:0.06em;
 }
 footer a{color:var(--text2);text-decoration:none;transition:color 0.2s}
 footer a:hover{color:var(--text)}
-.foot-links{display:flex;gap:24px}
+.foot-links{display:flex;gap:clamp(16px, 4vw, 24px);flex-wrap:wrap;}
 
 @media(max-width:640px){
-    footer{padding:30px 28px;flex-direction:column;gap:18px;text-align:center}
-    .foot-links{flex-wrap:wrap;justify-content:center}
+    footer{flex-direction:column;text-align:center;justify-content:center;}
+    .foot-links{justify-content:center;}
 }
 
 /* ── FADE-IN SCROLL REVEAL ───────────────────────────────────────────────── */
@@ -717,4 +825,125 @@ footer a:hover{color:var(--text)}
 }
 .fade-in.is-visible{
     opacity:1;transform:translateY(0);
+}
+
+/* ── EXTRA SMALL DEVICE OPTIMIZATIONS ────────────────────────────────────── */
+
+@media(max-width:480px){
+    :root{
+        --radius: 10px;
+        --section-padding: 48px 0;
+    }
+
+    .hero-content{
+        padding: 0 20px;
+    }
+
+    .section-inner{
+        padding: 0 20px;
+    }
+
+    .hero-title{
+        letter-spacing: -0.02em;
+    }
+
+    .btn{
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-cta{
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-cta .btn{
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .badge{
+        font-size: 8px;
+        padding: 4px 8px;
+    }
+
+    .stats-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .verif-row{
+        grid-template-columns: 1fr;
+    }
+
+    .entry-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .trust-flow{
+        grid-template-columns: 1fr;
+    }
+
+    .trust-flow .flow-step:first-child{
+        margin-bottom: -1px;
+    }
+}
+
+/* ── SAFE AREA SUPPORT FOR NOTCHED DEVICES ───────────────────────────────── */
+
+@supports (padding: max(0px)) {
+    .hero-content {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    .section-inner {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    .nav {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    footer {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-bottom: max(30px, env(safe-area-inset-bottom));
+    }
+}
+
+
+@media (orientation: landscape) and (max-height: 600px) {
+    .hero-content {
+        justify-content: center;
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+
+    .hero-title {
+        font-size: clamp(28px, 6vh, 48px);
+        margin-bottom: 12px;
+    }
+
+    .hero-sub {
+        margin-bottom: 20px;
+    }
+
+    .hero-badges {
+        margin-bottom: 20px;
+    }
+
+    .scroll-hint {
+        display: none;
+    }
+
+    .section {
+        padding: 40px 0;
+    }
+
+    .sec-heading {
+        font-size: clamp(24px, 5vh, 36px);
+    }
 }
