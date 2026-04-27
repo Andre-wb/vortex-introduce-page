@@ -15,6 +15,12 @@
      Camera is offset so the chain appears on the right half of the screen. -->
 <canvas id="chain-canvas"></canvas>
 
+<!-- CSS3D LAYER: section panels are CSS3DObjects parented to the chain group,
+     so they physically rotate with it. Only the panel currently facing the
+     camera is visible (opacity falls off with cos(angle)), so the others
+     "spin away" as the chain rotates and a new one rotates in. -->
+<div id="css3d-root"></div>
+
 <!-- NAV -->
 <nav class="nav">
   <a href="/" class="nav-brand">
@@ -353,21 +359,15 @@
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div>VORTEX CONTROLLER — <span id="foot-version">v1.0</span></div>
-  <div class="foot-links">
-    <a href="/nodes">Nodes</a>
-    <a href="/entries">Entries</a>
-    <a href="/mirrors">Mirrors</a>
-    <a href="/security">Security</a>
-    <a href="/admin">Treasury</a>
-  </div>
-</footer>
+<!-- SCROLL SPACER: gives the body enough scroll length to drive a full 360°
+     rotation of the chain (sections themselves were extracted into 3D). -->
+<div id="scroll-spacer"></div>
+
 
 <div id="perf-hud"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
 <script src="js/chain.js"></script>
 <script src="js/text-reveal.js"></script>
 </body>

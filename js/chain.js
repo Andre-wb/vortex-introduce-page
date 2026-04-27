@@ -145,8 +145,8 @@
     // cx/cy/cz    = camera POSITION targets (cursor orbit is added on top).
     // Smooth lerp between adjacent presets as scrollY crosses section boundaries.
     const VIEWS = [
-        // Hero: Top of chain - God view, looking down
-        { crx:  0.30, cry:  0.00, crz:  0.00, cx: -1.5, cy:  6.0, cz: 16.0 },
+        // Hero: chain dead centered on screen — camera at eye level, no tilt.
+        { crx:  0.00, cry:  0.00, crz:  0.00, cx: -2.0, cy:  0.0, cz: 12.0 },
 
         // Network: Falling into the chain - dizzying angle
         { crx:  1.40, cry:  0.60, crz:  0.30, cx: 2.0, cy:  3.5, cz: 10.0 },
@@ -347,6 +347,84 @@
         // Touch detection — cursor orbit disabled on touch
         const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
+        // ═══════════════════════════════════════════════════════════════════════
+        // CSS3D PANELS — sections rotate WITH the chain
+        //   Each <section> becomes a CSS3DObject placed on a ring around the
+        //   chain's Y axis, parented to `chain` so chain.rotation.y carries
+        //   them around. In the animate loop we set per-panel opacity from
+        //   cos(world-angle): the panel facing the camera is opaque, the
+        //   others fade out as they spin away. This way only one section is
+        //   readable at a time, but they physically depart with the chain.
+        // ═══════════════════════════════════════════════════════════════════════
+
+        const css3dRoot = document.getElementById('css3d-root');
+        let css3dRenderer = null;
+        const panelGroup = new THREE.Group();
+        chain.add(panelGroup);
+
+        const panelObjs = [];   // { obj, baseAngle, el }
+
+        if (css3dRoot && THREE.CSS3DRenderer) {
+            css3dRenderer = new THREE.CSS3DRenderer();
+            css3dRenderer.setSize(window.innerWidth, window.innerHeight);
+            css3dRoot.appendChild(css3dRenderer.domElement);
+
+            const PANEL_RADIUS       = 5.2;     // distance from chain axis (world units)
+            const PANEL_SCALE_NORMAL = 0.0068;  // standard panel — bigger
+            const PANEL_SCALE_DENSE  = 0.0048;  // security — denser content, smaller
+            const DENSE_PANEL_IDS    = new Set(['s-security']);
+
+            SECTION_IDS.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.add('panel-3d');
+
+                const obj   = new THREE.CSS3DObject(el);
+                const angle = (i / SECTION_IDS.length) * Math.PI * 2;
+                const scale = DENSE_PANEL_IDS.has(id)
+                    ? PANEL_SCALE_DENSE
+                    : PANEL_SCALE_NORMAL;
+
+                obj.position.set(
+                    Math.sin(angle) * PANEL_RADIUS,
+                    0,
+                    Math.cos(angle) * PANEL_RADIUS
+                );
+                obj.rotation.y = angle;
+                obj.scale.setScalar(scale);
+
+                panelGroup.add(obj);
+                panelObjs.push({ obj, baseAngle: angle, el });
+            });
+        }
+
+        // Per-frame: each panel's opacity comes from how directly it faces the
+        // camera (cos of world angle), and its local Y drifts so it visibly
+        // rises into view from below as it spins in, and continues lifting
+        // upward as it leaves — gives a "scrolling vertically" sensation on
+        // top of the chain rotation.
+        const PANEL_OP_POWER = 1.5;  // softer fade — lower = wider visible window
+        const PANEL_LIFT     = 1.6;  // world units the panel travels up/down
+        function updatePanelOpacities() {
+            const chainY = chain.rotation.y;
+            for (const p of panelObjs) {
+                // World angle of the panel's outward normal vs. +Z (toward camera)
+                let a = (p.baseAngle + chainY) % (Math.PI * 2);
+                if (a >  Math.PI) a -= Math.PI * 2;
+                if (a < -Math.PI) a += Math.PI * 2;
+
+                const facing = Math.cos(a);                        // 1 front, -1 back
+                const op     = Math.max(0, facing) ** PANEL_OP_POWER;
+                p.el.style.opacity       = op.toFixed(3);
+                p.el.style.pointerEvents = op > 0.5 ? 'auto' : 'none';
+
+                // Vertical drift: rises into the front, then keeps lifting away.
+                // sin(a): +1 just before front, 0 at front, -1 just after — so
+                // -sin pushes panels up from below as they enter and up as exit.
+                p.obj.position.y = -PANEL_LIFT * Math.sin(a);
+            }
+        }
+
         // ── Section positions ──────────────────────────────────────────────────
         // Pre-computed at init; recomputed on resize.
         let sectionTops = [];
@@ -377,66 +455,72 @@
         // the camera frame on both ends.
         const TRAVEL_HALF = halfH * 0.6;
 
-        // Chain group rotation targets (lerped in animate loop)
-        let targetRX = VIEWS[0].crx;
-        let targetRY = VIEWS[0].cry;
-        let targetRZ = VIEWS[0].crz;
-
         // Camera base position targets (cursor orbit added on top)
         let targetCX = VIEWS[0].cx;
         let targetCY = VIEWS[0].cy;
         let targetCZ = VIEWS[0].cz;
 
-        // Chain Y position target
-        let chainTargetY = TRAVEL_HALF;
-        let chainCurrentY = TRAVEL_HALF;
+        // Chain Y position target — chain stays centered on screen.
+        let chainTargetY  = 0;
+        let chainCurrentY = 0;
 
         // Is user currently scrolling?
         let isScrolling = false;
         let scrollTimer = null;
 
-        function updateScroll() {
-            const scrollY    = window.scrollY;
-            const maxScroll  = Math.max(1, document.body.scrollHeight - window.innerHeight);
-            const scrollFrac = Math.min(1, scrollY / maxScroll);
+        // Scroll-driven spin: a full page scroll = exactly one 360° revolution.
+        // With 5 panels evenly spaced around the Y axis, each panel takes the
+        // front-facing position for 1/5 of the page scroll. Panel i is in front
+        // when scrollFrac == i/5. Negative angle so down-scroll = clockwise.
+        let spinTargetY = 0;
 
-            // Chain Y travel:
-            chainTargetY = TRAVEL_HALF - scrollFrac * TRAVEL_HALF * 1.5;
+        // Continuous, unbounded input-driven rotation. Each wheel pixel adds a
+        // tiny fraction of a radian to the rotation target — no caps, no
+        // section snapping, just a slow steady spin proportional to how much
+        // the user inputs. Chain lerps to spinTargetY in animate() for
+        // smoothness. Native scroll is off; body overflow:hidden.
+        chainTargetY = 0;
+        targetCX = VIEWS[0].cx;
+        targetCY = VIEWS[0].cy;
+        targetCZ = VIEWS[0].cz;
 
-            // Section blend: which section are we in?
-            let si = 0;
-            for (let k = sectionTops.length - 1; k >= 0; k--) {
-                if (scrollY >= sectionTops[k] - 80) { si = k; break; }
-            }
-            const siNext = Math.min(si + 1, VIEWS.length - 1);
+        const SPIN_PER_PX = 0.0008;   // radians per px of wheel/touch input
+        const KEY_STEP    = 0.25;     // radians per arrow / page key press
 
-            const sTop  = sectionTops[si];
-            const sBot  = siNext < sectionTops.length ? sectionTops[siNext] : maxScroll;
-            let   raw   = sBot > sTop ? (scrollY - sTop) / (sBot - sTop) : 0;
-            raw         = Math.max(0, Math.min(1, raw));
-            // Smooth-step (ease in/out)
-            const blend = raw * raw * (3 - 2 * raw);
-
-            const vA = VIEWS[si];
-            const vB = VIEWS[siNext];
-            function lerp(a, b, t) { return a + (b - a) * t; }
-
-            targetRX = lerp(vA.crx, vB.crx, blend);
-            targetRY = lerp(vA.cry, vB.cry, blend);
-            targetRZ = lerp(vA.crz, vB.crz, blend);
-            targetCX = lerp(vA.cx,  vB.cx,  blend);
-            targetCY = lerp(vA.cy,  vB.cy,  blend);
-            targetCZ = lerp(vA.cz,  vB.cz,  blend);
-        }
-
-        window.addEventListener('scroll', () => {
+        function bumpInput() {
             isScrolling = true;
             clearTimeout(scrollTimer);
             scrollTimer = setTimeout(() => { isScrolling = false; }, 700);
-            updateScroll();
+        }
+
+        // Wheel + trackpad — accumulates into spinTargetY
+        window.addEventListener('wheel', (e) => {
+            spinTargetY -= e.deltaY * SPIN_PER_PX;
+            bumpInput();
         }, { passive: true });
 
-        updateScroll();
+        // Touch drag — accumulates while finger moves
+        let lastTouchY = null;
+        window.addEventListener('touchstart', (e) => {
+            lastTouchY = e.touches[0].clientY;
+        }, { passive: true });
+        window.addEventListener('touchmove', (e) => {
+            if (lastTouchY === null) return;
+            const dy = lastTouchY - e.touches[0].clientY;
+            lastTouchY = e.touches[0].clientY;
+            spinTargetY -= dy * SPIN_PER_PX;
+            bumpInput();
+        }, { passive: true });
+        window.addEventListener('touchend', () => { lastTouchY = null; }, { passive: true });
+
+        // Keyboard arrows / pgup-pgdn / space — discrete nudges
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+                spinTargetY -= KEY_STEP; bumpInput(); e.preventDefault();
+            } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+                spinTargetY += KEY_STEP; bumpInput(); e.preventDefault();
+            }
+        });
 
         // ═══════════════════════════════════════════════════════════════════════
         // 8. CURSOR ORBIT
@@ -445,8 +529,8 @@
         //    The offset lerps to 0 while scrolling for a clean feel.
         // ═══════════════════════════════════════════════════════════════════════
 
-        const ORBIT_X = 4;   // max camera X offset from cursor (left/right)
-        const ORBIT_Y = 4;   // max camera Y offset from cursor (up/down)
+        const ORBIT_X = 0;   // disabled — chain no longer follows the cursor
+        const ORBIT_Y = 0;
 
         let cursorNX = 0, cursorNY = 0;   // normalized −1→1
         let smCurX   = 0, smCurY   = 0;   // smoothed cursor
@@ -490,17 +574,13 @@
                 renderer.setSize(w, h, false);
             }
 
-            // ── Chain group rotation (section views) ──────────────────────────
-            // Faster convergence while scrolling; smoother in idle
-            const rotSpeed = isScrolling ? 0.06 : 0.04;
-            chain.rotation.x += (targetRX - chain.rotation.x) * rotSpeed;
-            chain.rotation.y += (targetRY - chain.rotation.y) * rotSpeed;
-            chain.rotation.z += (targetRZ - chain.rotation.z) * rotSpeed;
-
-            // Subtle idle sway — only when NOT scrolling
-            if (!isScrolling) {
-                chain.rotation.y += Math.sin(totalSecs * 0.18) * 0.0012;
-            }
+            // ── Chain group rotation ──────────────────────────────────────────
+            // Chain rotates discretely between sections — spinTargetY jumps to
+            // the new section angle on each wheel/swipe step, the lerp gives a
+            // ~1 s smooth tween between steps. One input event = one section.
+            chain.rotation.y += (spinTargetY - chain.rotation.y) * 0.05;
+            chain.rotation.x += (0 - chain.rotation.x) * 0.05;
+            chain.rotation.z += (0 - chain.rotation.z) * 0.05;
 
             // ── Chain Y travel ────────────────────────────────────────────────
             const ySpeed = isScrolling ? 0.09 : 0.04;
@@ -548,6 +628,10 @@
             }
 
             renderer.render(scene, cam);
+
+            // Fade panels by their facing angle and render the CSS3D layer
+            updatePanelOpacities();
+            if (css3dRenderer) css3dRenderer.render(scene, cam);
         }
 
         // ═══════════════════════════════════════════════════════════════════════
@@ -562,6 +646,7 @@
                 const h = canvas.clientHeight;
                 renderer.setPixelRatio(PERF.getDPR());
                 renderer.setSize(w, h, false);
+                if (css3dRenderer) css3dRenderer.setSize(window.innerWidth, window.innerHeight);
                 cam.aspect = w / h;
                 cam.updateProjectionMatrix();
                 cacheSectionTops();

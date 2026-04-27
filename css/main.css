@@ -29,13 +29,12 @@ body{
     background:var(--bg);
     color:var(--text);
     font-family:var(--sans);
-    overflow-x:hidden;
+    overflow:hidden;
     -webkit-font-smoothing:antialiased;
 }
 
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--purple);border-radius:2px}
+::-webkit-scrollbar{width:0;height:0;display:none}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
 
 /* ── CHAIN CANVAS — fixed full-screen background ─────────────────────────── */
 /* The chain 3D scene sits behind all content. It covers the full viewport   */
@@ -52,6 +51,123 @@ body{
     display:block;
     pointer-events:none;
 }
+
+/* ── CSS3D PANELS — sections rotate with the chain ───────────────────────── */
+/* Each <section> is wrapped in a CSS3DObject parented to the chain group.    */
+/* They sit on a ring around the chain's Y axis; chain.rotation.y carries     */
+/* them with it. JS sets each panel's opacity per frame from cos(world-angle) */
+/* so only the front-facing panel reads — the others fade as they spin away.  */
+
+#css3d-root{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    z-index:1;
+    pointer-events:none;
+    overflow:hidden;
+}
+#css3d-root > div{pointer-events:none}
+.panel-3d{pointer-events:auto}
+
+.panel-3d{
+    position:absolute !important;   /* beat #hero's `position: relative` */
+    top:0 !important;left:0 !important;
+    width:720px;
+    height:auto !important;          /* beat #hero { height: 300vh } */
+    z-index:auto !important;         /* beat #hero { z-index: 1 } */
+    background:transparent;
+    color:var(--text);
+    backface-visibility:hidden;
+    will-change:opacity,transform;
+    /* CSS3DObject origin is the element center */
+    transform:translate(-50%,-50%);
+}
+.panel-3d .hero-sticky,
+.panel-3d .section-inner,
+.panel-3d .hero-content{
+    position:static !important;
+    height:auto !important;
+    min-height:0 !important;
+    padding:0 !important;
+    transform:none !important;
+    background:transparent !important;
+    inset:auto !important;
+    display:block !important;
+}
+.panel-3d .hero-grad,
+.panel-3d .hero-vignette,
+.panel-3d .scroll-hint{display:none !important}
+.panel-3d .fade-in{opacity:1;transform:none}
+
+/* Hero panel: ensure all its content is visible inside the 3D layer.
+   The original page styles set display/positioning that don't translate
+   to a CSS3DObject context — flatten everything to normal block flow. */
+.panel-3d#hero{display:block !important;visibility:visible !important}
+.panel-3d#hero .hero-eyebrow,
+.panel-3d#hero .hero-title,
+.panel-3d#hero .hero-sub,
+.panel-3d#hero .hero-badges,
+.panel-3d#hero .hero-cta{
+    display:flex;
+    visibility:visible !important;
+}
+.panel-3d#hero .hero-eyebrow{align-items:center}
+.panel-3d#hero .hero-title{display:block}
+.panel-3d#hero .hero-sub{display:block;max-width:none}
+.panel-3d#hero .hero-content{max-width:none;padding:0}
+/* Force every hero descendant fully visible — overrides any inline opacity:0,
+   leftover translateY, or filter:blur left by interrupted text-reveal animation
+   spans / setIntervals. The panel root is excluded from the opacity override so
+   updatePanelOpacities() can still fade it as the chain rotates. */
+.panel-3d#hero *{
+    opacity:1 !important;
+    filter:none !important;
+    visibility:visible !important;
+}
+.panel-3d#hero .hero-title em,
+.panel-3d#hero .hero-eyebrow,
+.panel-3d#hero .hero-sub,
+.panel-3d#hero .hero-cta .btn,
+.panel-3d#hero .hero-badges .badge{
+    transform:none !important;
+}
+
+/* Compact every dense block so content-heavy sections (security in
+   particular) fit inside the panel without overflowing. */
+.panel-3d .sec-heading{font-size:24px;line-height:1.1;margin-bottom:6px}
+.panel-3d .sec-body{font-size:12px;line-height:1.4;margin-bottom:10px}
+.panel-3d .sec-label{font-size:10px;margin-bottom:4px}
+.panel-3d .keys-table{font-size:10px;margin-bottom:10px}
+.panel-3d .keys-table th,
+.panel-3d .keys-table td{padding:4px 8px}
+.panel-3d .trust-flow{gap:6px;margin:10px 0;display:grid;grid-template-columns:1fr 1fr}
+.panel-3d .flow-step{padding:6px 8px}
+.panel-3d .flow-n{font-size:8px}
+.panel-3d .flow-t{font-size:11px}
+.panel-3d .flow-d{font-size:10px;line-height:1.35}
+.panel-3d .check-list{gap:4px}
+.panel-3d .check-item{padding:4px 6px;font-size:10px;line-height:1.35}
+.panel-3d .stats-grid{gap:8px}
+.panel-3d .stat{padding:10px}
+.panel-3d .stat-v{font-size:22px}
+.panel-3d .verif-row{gap:6px;margin:10px 0}
+.panel-3d .verif-card{padding:8px}
+.panel-3d .verif-body{font-size:10px;line-height:1.35}
+/* Stack two-column layouts vertically inside panels — they fit better */
+.panel-3d .split{display:flex;flex-direction:column;gap:12px}
+.panel-3d .entry-grid{gap:6px}
+.panel-3d .entry-card{padding:8px}
+.panel-3d .entry-body{font-size:10px;line-height:1.35}
+.panel-3d .steps li{font-size:12px;padding:4px 0}
+.panel-3d .card{padding:8px;margin-bottom:6px}
+.panel-3d .card-body{font-size:10px;line-height:1.35}
+.panel-3d .hero-title{font-size:36px;line-height:1.05}
+.panel-3d .hero-sub{font-size:13px;line-height:1.45}
+/* The security panel is the densest — strip a few chrome elements to fit */
+.panel-3d#s-security .btn-ghost{display:none}
+
+/* Native scroll is disabled — section navigation is wheel/swipe-based.       */
+#scroll-spacer{display:none}
 
 /* ── NAV ─────────────────────────────────────────────────────────────────── */
 

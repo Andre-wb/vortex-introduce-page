@@ -350,7 +350,10 @@
 
   /* ─── boot ───────────────────────────────────────────────────── */
   function boot() {
-    initHero();
+    // initHero() disabled — the hero section now lives inside the CSS3D layer
+    // as a panel on the chain. The glitch reveal swaps text for opacity:0
+    // spans which never restore reliably under 3D transforms, so the panel
+    // appears for a beat and then blanks out. Skip it; hero shows via CSS.
 
     document.querySelectorAll('.fade-in').forEach(el => {
       if (!el.closest('#hero')) sectionObs.observe(el);
